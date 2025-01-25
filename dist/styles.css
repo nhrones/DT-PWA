@@ -1,0 +1,145 @@
+
+/* body {
+   background-color: black;
+   color:white;
+   font-family: Arial, Helvetica, sans-serif;
+   margin: 0;
+} */
+body {
+   color-scheme: dark;
+   background-color: #222;
+   color: #eee;
+   font-family: sans-serif;
+}
+.hidden {
+   display: none;
+}
+
+#table {
+margin-left: 50px;
+}
+
+#table td,
+#table th {
+   border: 1px solid #554e4e;
+   padding: 8px;
+}
+
+#table tr:nth-child(even) {
+   background-color: #222;
+}
+
+#table tr:hover {
+   background-color: #242;
+}
+
+.selected_row td {
+   background-color: #363;
+}
+
+#table th {
+   padding-top: 5px;
+   padding-bottom: 5px;
+   text-align: left;
+   background-color: #04AA6D;
+   color: white;
+   user-select: none;
+}
+
+#header1 {
+   min-width: 70px;
+}
+
+#header2 {
+   min-width: 300px;
+}
+
+#header5 {
+   width: 50%;
+}
+
+.indicator {
+   font-size: 1rem;
+   font-weight: bold;
+}
+
+button {
+   background-color: #04AA6D;
+   border: none;
+   color: white;
+   padding: 10px;
+   text-align: center;
+   margin-right: 10px;
+   margin-top: 10px;
+   width: 110px;
+   cursor: pointer;
+   border-radius: 8px;
+   text-decoration: none;
+   font-size: 16px;
+}
+
+.editable {
+   color: white;
+   font-weight: bold;
+   border: 1px solid LightGoldenrodYellow;
+}
+
+input[type="file"] {
+   display: none;
+}
+
+footer {
+   position: fixed;
+   height: 10%;
+   width: 100%;
+   padding-top: 2px;
+   bottom: 0;
+   left: 0;
+   clear: both;
+   background-color: black;
+   color: white;
+   overflow: auto;
+}
+
+table thead {
+   position: sticky;
+   inset-block-start: 0;
+   /* "top" */
+}
+
+#content {
+   width: 100%;
+   margin: 0px;
+   height: 80%;
+   margin-bottom: 11%;
+}
+
+dialog {
+   border-radius: 1rem;
+   border-width: 2px;
+   border-color: red;
+   background-color: black;
+ }
+
+ dialog::backdrop {
+   background-color: BLACK;
+ }
+
+ input {
+   font-size: 1rem;
+   border-radius: 10px;
+   padding: 12px 20px;
+   margin: 8px 0;
+   box-sizing: border-box;
+ }
+
+ label {
+   font-size: 1rem;
+   margin-right: 10px;
+   color: white;
+ } 
+ 
+p {
+   font-size: 1rem;
+   color: white;
+ }
