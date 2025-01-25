@@ -578,7 +578,7 @@ var appContext = {
   LOCAL_DB: BOOL,
   // run from local dataService
   LocalDbURL: "http://localhost:9099/",
-  RemoteDbURL: "https://kv-pwa-rpc.deno.dev/",
+  RemoteDbURL: "https://kv-dt-rpc.deno.dev/",
   RpcURL: "SSERPC/kvRegistration",
   PIN: "",
   // Encrypted PIN from KvDB
