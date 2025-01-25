@@ -569,13 +569,13 @@ function restoreData() {
 __name(restoreData, "restoreData");
 
 // src/main.ts
-var BOOL = false;
+var BOOL = true;
 var appContext = {
   BYPASS_PIN: BOOL,
   // bypass user PIN input?
   DEV: BOOL,
   // enable logging
-  LOCAL_DB: BOOL,
+  LOCAL_DB: false,
   // run from local dataService
   LocalDbURL: "http://localhost:9099/",
   RemoteDbURL: "https://kv-dt-rpc.deno.dev/",

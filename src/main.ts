@@ -3,14 +3,14 @@ import { initDOM } from "./deps.ts"
 import { KvCache } from "./deps.ts"
 import { AppContext } from "../../types.ts"
 
-const BOOL = false
+const BOOL = true
 /** 
  * Shared app context -> dependency injected 
  */
 const appContext: AppContext = {
    BYPASS_PIN: BOOL, // bypass user PIN input?
    DEV: BOOL, // enable logging
-   LOCAL_DB: BOOL, // run from local dataService
+   LOCAL_DB: false, // run from local dataService
    LocalDbURL: "http://localhost:9099/",
    RemoteDbURL: "https://kv-dt-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
