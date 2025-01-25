@@ -1,7 +1,6 @@
 /// <reference lib="dom" />
-import { initDOM } from "./deps.ts"
-import { KvCache } from "./deps.ts"
-import { AppContext } from "../../types.ts"
+import { initDOM, KvCache } from "./deps.ts"
+import type { AppContext } from "./deps.ts"
 
 const BOOL = false
 /** 

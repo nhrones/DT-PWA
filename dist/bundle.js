@@ -568,56 +568,6 @@ function restoreData() {
 }
 __name(restoreData, "restoreData");
 
-// ../shared/signals.ts
-function buildEventBus2() {
-  const eventSubscriptions = /* @__PURE__ */ new Map();
-  const newEventBus = {
-    /**
-     * on - registers a handler function to be executed when an event is fired
-     * @param {key} eventName - event name (one of `TypedEvents` only)!
-     * @param {string} id - id of a target element (may be an empty string)
-     * @param {Handler} handler - event handler callback function
-     */
-    on(eventName, id, handler) {
-      const keyName = eventName + "-" + id;
-      if (eventSubscriptions.has(keyName)) {
-        const handlers = eventSubscriptions.get(keyName);
-        handlers.push(handler);
-      } else {
-        eventSubscriptions.set(keyName, [handler]);
-      }
-    },
-    /** 
-     * Publish an event
-     * executes all registered handlers for a named event
-     * @param {key} eventName - event name - one of `TypedEvents` only!
-     * @param {string} id - id of a target element (may be an empty string)
-     * @param {TypedEvents[key]} data - data payload, typed for this category of event
-     */
-    fire(eventName, id, data) {
-      const keyName = eventName + "-" + id;
-      const handlers = eventSubscriptions.get(keyName);
-      if (handlers) {
-        for (const handler of handlers) {
-          handler(data);
-        }
-      }
-    },
-    /** xor encryption */
-    xorEncrypt(text) {
-      let result = "";
-      const key = "ndhg";
-      for (let i = 0; i < text.length; i++) {
-        result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-      }
-      return result;
-    }
-  };
-  return newEventBus;
-}
-__name(buildEventBus2, "buildEventBus");
-var signals2 = buildEventBus2();
-
 // src/main.ts
 var BOOL = false;
 var appContext = {
