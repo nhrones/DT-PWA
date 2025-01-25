@@ -569,7 +569,7 @@ function restoreData() {
 __name(restoreData, "restoreData");
 
 // src/main.ts
-var BOOL = true;
+var BOOL = false;
 var appContext = {
   BYPASS_PIN: BOOL,
   // bypass user PIN input?

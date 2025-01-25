@@ -3,7 +3,7 @@ import { initDOM } from "./deps.ts"
 import { KvCache } from "./deps.ts"
 import { AppContext } from "../../types.ts"
 
-const BOOL = true
+const BOOL = false
 /** 
  * Shared app context -> dependency injected 
  */
