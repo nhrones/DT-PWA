@@ -2,7 +2,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../shared/signals.ts
+// ../Common/signals.ts
 function buildEventBus() {
   const eventSubscriptions = /* @__PURE__ */ new Map();
   const newEventBus = {
@@ -22,7 +22,7 @@ function buildEventBus() {
       }
     },
     /** 
-     * Publish an event
+     * fire - publish an event
      * executes all registered handlers for a named event
      * @param {key} eventName - event name - one of `TypedEvents` only!
      * @param {string} id - id of a target element (may be an empty string)
@@ -36,21 +36,27 @@ function buildEventBus() {
           handler(data);
         }
       }
-    },
-    /** xor encryption */
-    xorEncrypt(text) {
-      let result = "";
-      const key = "ndhg";
-      for (let i = 0; i < text.length; i++) {
-        result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-      }
-      return result;
     }
   };
   return newEventBus;
 }
 __name(buildEventBus, "buildEventBus");
 var signals = buildEventBus();
+
+// ../Common/utils.ts
+var $ = /* @__PURE__ */ __name((id) => document.getElementById(id), "$");
+var on = /* @__PURE__ */ __name((elem, event, listener) => {
+  return elem.addEventListener(event, listener);
+}, "on");
+function encryptText(text) {
+  let result = "";
+  const key = "ndhg";
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return result;
+}
+__name(encryptText, "encryptText");
 
 // ../KvDataService/kvClient.ts
 var KvClient = class {
@@ -83,7 +89,7 @@ var KvClient = class {
     eventSource.addEventListener("open", () => {
       this.callProcedure(this.ServiceURL, "GET", { key: ["PIN"] }).then((result) => {
         if (this.DEV) console.log("GET PIN ", result.value);
-        const pin = signals.xorEncrypt(result.value);
+        const pin = encryptText(result.value);
         if (this.DEV) console.log("GET PIN ", pin);
         this.CTX.PIN = result.value;
         this.fetchQuerySet();
@@ -122,7 +128,7 @@ var KvClient = class {
   }
   /** set Kv Pin */
   async setKvPin(rawpin) {
-    const pin = signals.xorEncrypt(rawpin);
+    const pin = encryptText(rawpin);
     await this.callProcedure(this.ServiceURL, "SET", { key: ["PIN"], value: pin }).then((_result) => {
       if (this.DEV) console.log(`Set PIN ${rawpin} to: `, pin);
     });
@@ -134,7 +140,7 @@ var KvClient = class {
       "GET",
       { key: [this.CTX.dbOptions.schema.dbKey] }
     ).then((result) => {
-      this.kvCache.restoreCache(signals.xorEncrypt(result.value));
+      this.kvCache.restoreCache(encryptText(result.value));
     });
   }
   /** get row from key */
@@ -262,7 +268,7 @@ var KvCache = class {
       this.dbMap = new Map([...this.dbMap.entries()].sort());
     }
     const mapString = JSON.stringify(Array.from(this.dbMap.entries()));
-    const encrypted = signals.xorEncrypt(mapString);
+    const encrypted = encryptText(mapString);
     this.kvClient.set(encrypted);
   }
   /** hydrate a dataset from a single raw record stored in kvDB */
@@ -405,12 +411,6 @@ function buildFooter(kvCache2) {
 }
 __name(buildFooter, "buildFooter");
 
-// ../Shared/utils.ts
-var $ = /* @__PURE__ */ __name((id) => document.getElementById(id), "$");
-var on = /* @__PURE__ */ __name((elem, event, listener) => {
-  return elem.addEventListener(event, listener);
-}, "on");
-
 // ../NewDataTable/customDataTable.ts
 var tableBody;
 function buildDataTable(kvCache2) {
@@ -535,7 +535,7 @@ function initDOM(kvCache2) {
     event.preventDefault();
     const pinIn = pinInput;
     const pinDia = pinDialog;
-    const ecriptedPin = signals.xorEncrypt(pinIn.value);
+    const ecriptedPin = encryptText(pinIn.value);
     if (event.key === "Enter" || ecriptedPin === kvCache2.CTX.PIN) {
       pinTryCount += 1;
       if (ecriptedPin === kvCache2.CTX.PIN) {
