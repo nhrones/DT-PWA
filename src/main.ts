@@ -2,14 +2,14 @@
 import { initDOM, KvCache } from "./deps.ts"
 import type { AppContext } from "./deps.ts"
 
-const BOOL = false
+const LOCAL = false
 /** 
  * Shared app context -> dependency injected 
  */
 const appContext: AppContext = {
-   BYPASS_PIN: BOOL, // bypass user PIN input?
-   DEV: BOOL, // enable logging
-   LOCAL_DB: BOOL, // run from local dataService
+   BYPASS_PIN: LOCAL, // bypass user PIN input?
+   DEV: LOCAL, // enable logging
+   LOCAL_DB: LOCAL, // run from local dataService
    LocalDbURL: "http://localhost:9099/",
    RemoteDbURL: "https://kv-dt-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
@@ -28,10 +28,14 @@ const appContext: AppContext = {
 }
 
 /**
- * Initialize our Custom DataTable UI
- * This will initiate async data loading
- * We pass in a new KvCache with a context
+ * Initiate async data loading and data provider
+ * We pass in a context for the service
  */
-//@ts-ignore ?
-initDOM(new KvCache(appContext))
+const kvCache = new KvCache(appContext)
+
+/**
+ * Initialize our Custom DataTable UI
+ * We pass it a KvCache instance (data provider)
+ */
+initDOM(kvCache)
 

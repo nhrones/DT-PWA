@@ -332,7 +332,7 @@ function resetFocusedRow() {
   focusedRow = null;
 }
 __name(resetFocusedRow, "resetFocusedRow");
-function makeEditableRow(kvCache) {
+function makeEditableRow(kvCache2) {
   const rows = document.querySelectorAll("tr");
   for (const row of Array.from(rows)) {
     if (row.className.startsWith("headerRow")) continue;
@@ -356,8 +356,8 @@ function makeEditableRow(kvCache) {
         const col = focusedCell.dataset.column_id || 0;
         const columnIndex = parseInt(focusedCell.dataset.column_index) || 0;
         console.log(`focusedCell.onblur key: ${key} col: ${col}, columnIndex ${columnIndex}`);
-        console.info("kvCache", kvCache.dbMap);
-        const rowObj = kvCache.get(key);
+        console.info("kvCache", kvCache2.dbMap);
+        const rowObj = kvCache2.get(key);
         const currentValue = rowObj[col];
         const thisValue = focusedCell.textContent;
         console.log(`Need change?  currentValue: ${currentValue}, thisValue: ${thisValue}`);
@@ -368,13 +368,13 @@ function makeEditableRow(kvCache) {
             console.log("FIXING KEY");
             const newKey = thisValue;
             if (key !== newKey) {
-              kvCache.delete(key);
+              kvCache2.delete(key);
               key = thisValue;
-              kvCache.set(key, rowObj);
+              kvCache2.set(key, rowObj);
             }
           } else {
             console.info(`Calling kvCache.set(${key}`, rowObj);
-            kvCache.set(key, rowObj);
+            kvCache2.set(key, rowObj);
           }
         }
       };
@@ -388,19 +388,19 @@ __name(makeEditableRow, "makeEditableRow");
 var addBtn2 = document.getElementById("addbtn");
 var deleteBtn2 = document.getElementById("deletebtn");
 var table = document.getElementById("table");
-function buildFooter(kvCache) {
+function buildFooter(kvCache2) {
   addBtn2.onclick = (_e) => {
-    const newRow = Object.assign({}, kvCache.schema.sample);
+    const newRow = Object.assign({}, kvCache2.schema.sample);
     const firstColName = Object.keys(newRow)[0];
-    kvCache.set(newRow[firstColName], newRow);
-    buildDataTable(kvCache);
+    kvCache2.set(newRow[firstColName], newRow);
+    buildDataTable(kvCache2);
     const lastRow = table.rows[table.rows.length - 1];
     lastRow.scrollIntoView({ behavior: "smooth" });
   };
   deleteBtn2.onclick = (_e) => {
     const id = focusedRow.dataset.cache_key;
-    kvCache.delete(id);
-    buildDataTable(kvCache);
+    kvCache2.delete(id);
+    buildDataTable(kvCache2);
   };
 }
 __name(buildFooter, "buildFooter");
@@ -413,35 +413,35 @@ var on = /* @__PURE__ */ __name((elem, event, listener) => {
 
 // ../NewDataTable/customDataTable.ts
 var tableBody;
-function buildDataTable(kvCache) {
+function buildDataTable(kvCache2) {
   if (!tableBody) {
     tableBody = document.getElementById("table-body");
   }
-  const querySet = kvCache.querySet;
+  const querySet = kvCache2.querySet;
   tableBody.innerHTML = "";
   if (querySet) {
     for (let i = 0; i < querySet.length; i++) {
       const obj = querySet[i];
-      let row = `<tr data-cache_key="${obj[kvCache.columns[0].name]}">
+      let row = `<tr data-cache_key="${obj[kvCache2.columns[0].name]}">
         `;
-      for (let i2 = 0; i2 < kvCache.columns.length; i2++) {
-        row += `<td data-column_index=${i2} data-column_id="${kvCache.columns[i2].name}">${obj[kvCache.columns[i2].name]}</td>
+      for (let i2 = 0; i2 < kvCache2.columns.length; i2++) {
+        row += `<td data-column_index=${i2} data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>
             `;
       }
       row += "</tr>";
       tableBody.innerHTML += row;
     }
   }
-  for (let i = 0; i < kvCache.columns.length; i++) {
+  for (let i = 0; i < kvCache2.columns.length; i++) {
     const el = document.getElementById(`header${i + 1}`);
     el.onclick = (_e) => {
       resetFocusedRow();
-      buildDataTable(kvCache);
+      buildDataTable(kvCache2);
     };
   }
   resetFocusedRow();
-  buildFooter(kvCache);
-  makeEditableRow(kvCache);
+  buildFooter(kvCache2);
+  makeEditableRow(kvCache2);
 }
 __name(buildDataTable, "buildDataTable");
 signals.on("buildDataTableEV", "", (cache) => {
@@ -450,11 +450,11 @@ signals.on("buildDataTableEV", "", (cache) => {
 
 // ../NewDataTable/tableHead.ts
 var tablehead = document.getElementById("table-head");
-function buildTableHead(kvCache) {
+function buildTableHead(kvCache2) {
   const tr = '<tr class="headerRow">';
   let th = "";
-  for (let i = 0; i < kvCache.columns.length; i++) {
-    th += `   <th id="header${i + 1}" data-index=${i} value=1>${kvCache.columns[i].name}</th>`;
+  for (let i = 0; i < kvCache2.columns.length; i++) {
+    th += `   <th id="header${i + 1}" data-index=${i} value=1>${kvCache2.columns[i].name}</th>`;
   }
   ;
   tablehead.innerHTML += tr + th;
@@ -463,23 +463,23 @@ function buildTableHead(kvCache) {
 __name(buildTableHead, "buildTableHead");
 
 // ../NewDataTable/backup.ts
-function initBackup(kvCache) {
+function initBackup(kvCache2) {
   document.addEventListener("keydown", function(event) {
     if (event.ctrlKey && event.key === "b") {
       event.preventDefault();
-      if (kvCache.CTX.DEV) console.log("Ctrl + B backup data");
-      backupData(kvCache);
+      if (kvCache2.CTX.DEV) console.log("Ctrl + B backup data");
+      backupData(kvCache2);
     }
     if (event.ctrlKey && event.key === "r") {
       event.preventDefault();
-      if (kvCache.CTX.DEV) console.log("Ctrl + R restore data");
+      if (kvCache2.CTX.DEV) console.log("Ctrl + R restore data");
       restoreData();
     }
   });
 }
 __name(initBackup, "initBackup");
-function backupData(kvCache) {
-  const jsonData = JSON.stringify(Array.from(kvCache.dbMap.entries()));
+function backupData(kvCache2) {
+  const jsonData = JSON.stringify(Array.from(kvCache2.dbMap.entries()));
   const link = document.createElement("a");
   const file = new Blob([jsonData], { type: "application/json" });
   link.href = URL.createObjectURL(file);
@@ -510,9 +510,9 @@ var pinInput = $("pin");
 var popupText = $("popup_text");
 var pinTryCount = 0;
 var pinOK = false;
-function initDOM(kvCache) {
-  buildTableHead(kvCache);
-  initBackup(kvCache);
+function initDOM(kvCache2) {
+  buildTableHead(kvCache2);
+  initBackup(kvCache2);
   on(popupDialog, "click", (event) => {
     event.preventDefault();
     popupDialog.close();
@@ -536,9 +536,9 @@ function initDOM(kvCache) {
     const pinIn = pinInput;
     const pinDia = pinDialog;
     const ecriptedPin = signals.xorEncrypt(pinIn.value);
-    if (event.key === "Enter" || ecriptedPin === kvCache.CTX.PIN) {
+    if (event.key === "Enter" || ecriptedPin === kvCache2.CTX.PIN) {
       pinTryCount += 1;
-      if (ecriptedPin === kvCache.CTX.PIN) {
+      if (ecriptedPin === kvCache2.CTX.PIN) {
         pinIn.value = "";
         pinOK = true;
         pinDia.close();
@@ -558,7 +558,7 @@ function initDOM(kvCache) {
       }
     }
   });
-  if (kvCache.CTX.BYPASS_PIN) {
+  if (kvCache2.CTX.BYPASS_PIN) {
     pinOK = true;
   } else {
     pinDialog.showModal();
@@ -597,13 +597,13 @@ var LayoutContainer = class extends HTMLElement {
 customElements.define("layout-container", LayoutContainer);
 
 // src/main.ts
-var BOOL = false;
+var LOCAL = false;
 var appContext = {
-  BYPASS_PIN: BOOL,
+  BYPASS_PIN: LOCAL,
   // bypass user PIN input?
-  DEV: BOOL,
+  DEV: LOCAL,
   // enable logging
-  LOCAL_DB: BOOL,
+  LOCAL_DB: LOCAL,
   // run from local dataService
   LocalDbURL: "http://localhost:9099/",
   RemoteDbURL: "https://kv-dt-rpc.deno.dev/",
@@ -622,4 +622,5 @@ var appContext = {
     }
   }
 };
-initDOM(new KvCache(appContext));
+var kvCache = new KvCache(appContext);
+initDOM(kvCache);
