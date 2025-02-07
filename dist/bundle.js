@@ -58,7 +58,7 @@ function encryptText(text) {
 }
 __name(encryptText, "encryptText");
 
-// ../KvDataService/kvClient.ts
+// ../DT-DataProvider/kvClient.ts
 var KvClient = class {
   static {
     __name(this, "KvClient");
@@ -196,7 +196,7 @@ var KvClient = class {
   }
 };
 
-// ../KvDataService/kvCache.ts
+// ../DT-DataProvider/kvCache.ts
 var KvCache = class {
   static {
     __name(this, "KvCache");
@@ -327,7 +327,7 @@ var KvCache = class {
   }
 };
 
-// ../NewDataTable/tableRow.ts
+// ../DT-Component/tableRow.ts
 var deleteBtn = document.getElementById("deletebtn");
 var addBtn = document.getElementById("addbtn");
 var focusedRow;
@@ -390,7 +390,7 @@ function makeEditableRow(kvCache2) {
 }
 __name(makeEditableRow, "makeEditableRow");
 
-// ../NewDataTable/footer.ts
+// ../DT-Component/footer.ts
 var addBtn2 = document.getElementById("addbtn");
 var deleteBtn2 = document.getElementById("deletebtn");
 var table = document.getElementById("table");
@@ -411,7 +411,7 @@ function buildFooter(kvCache2) {
 }
 __name(buildFooter, "buildFooter");
 
-// ../NewDataTable/customDataTable.ts
+// ../DT-Component/customDataTable.ts
 var tableBody;
 function buildDataTable(kvCache2) {
   if (!tableBody) {
@@ -448,7 +448,7 @@ signals.on("buildDataTableEV", "", (cache) => {
   buildDataTable(cache);
 });
 
-// ../NewDataTable/tableHead.ts
+// ../DT-Component/tableHead.ts
 var tablehead = document.getElementById("table-head");
 function buildTableHead(kvCache2) {
   const tr = '<tr class="headerRow">';
@@ -462,7 +462,7 @@ function buildTableHead(kvCache2) {
 }
 __name(buildTableHead, "buildTableHead");
 
-// ../NewDataTable/backup.ts
+// ../DT-Component/backup.ts
 function initBackup(kvCache2) {
   document.addEventListener("keydown", function(event) {
     if (event.ctrlKey && event.key === "b") {
@@ -503,7 +503,7 @@ function restoreData() {
 }
 __name(restoreData, "restoreData");
 
-// ../NewDataTable/dom.ts
+// ../DT-Component/dom.ts
 var popupDialog = $("popupDialog");
 var pinDialog = $("myDialog");
 var pinInput = $("pin");
@@ -567,7 +567,7 @@ function initDOM(kvCache2) {
 }
 __name(initDOM, "initDOM");
 
-// ../NewDataTable/components/Container.ts
+// ../DT-Component/components/Container.ts
 var LayoutContainer = class extends HTMLElement {
   static {
     __name(this, "LayoutContainer");
