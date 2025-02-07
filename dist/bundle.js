@@ -327,7 +327,7 @@ var KvCache = class {
   }
 };
 
-// ../DT-Component/tableRow.ts
+// ../DT-Components/tableRow.ts
 var deleteBtn = document.getElementById("deletebtn");
 var addBtn = document.getElementById("addbtn");
 var focusedRow;
@@ -390,7 +390,7 @@ function makeEditableRow(kvCache2) {
 }
 __name(makeEditableRow, "makeEditableRow");
 
-// ../DT-Component/footer.ts
+// ../DT-Components/footer.ts
 var addBtn2 = document.getElementById("addbtn");
 var deleteBtn2 = document.getElementById("deletebtn");
 var table = document.getElementById("table");
@@ -411,7 +411,7 @@ function buildFooter(kvCache2) {
 }
 __name(buildFooter, "buildFooter");
 
-// ../DT-Component/customDataTable.ts
+// ../DT-Components/customDataTable.ts
 var tableBody;
 function buildDataTable(kvCache2) {
   if (!tableBody) {
@@ -448,7 +448,7 @@ signals.on("buildDataTableEV", "", (cache) => {
   buildDataTable(cache);
 });
 
-// ../DT-Component/tableHead.ts
+// ../DT-Components/tableHead.ts
 var tablehead = document.getElementById("table-head");
 function buildTableHead(kvCache2) {
   const tr = '<tr class="headerRow">';
@@ -462,7 +462,7 @@ function buildTableHead(kvCache2) {
 }
 __name(buildTableHead, "buildTableHead");
 
-// ../DT-Component/backup.ts
+// ../DT-Components/backup.ts
 function initBackup(kvCache2) {
   document.addEventListener("keydown", function(event) {
     if (event.ctrlKey && event.key === "b") {
@@ -503,7 +503,7 @@ function restoreData() {
 }
 __name(restoreData, "restoreData");
 
-// ../DT-Component/dom.ts
+// ../DT-Components/dom.ts
 var popupDialog = $("popupDialog");
 var pinDialog = $("myDialog");
 var pinInput = $("pin");
@@ -567,7 +567,7 @@ function initDOM(kvCache2) {
 }
 __name(initDOM, "initDOM");
 
-// ../DT-Component/components/Container.ts
+// ../DT-Components/components/Container.ts
 var LayoutContainer = class extends HTMLElement {
   static {
     __name(this, "LayoutContainer");
@@ -607,7 +607,6 @@ var appContext = {
   // run from local dataService
   LocalDbURL: "http://localhost:9099/",
   RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
-  //"https://kv-dt-rpc.deno.dev/",
   RpcURL: "SSERPC/kvRegistration",
   PIN: "",
   // Encrypted PIN from KvDB
