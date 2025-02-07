@@ -493,13 +493,14 @@ function backupData(kvCache) {
 }
 __name(backupData, "backupData");
 function restoreData() {
+  console.log("restoreData called");
   const fileload = document.getElementById("fileload");
   fileload?.click();
   fileload?.addEventListener("change", function() {
     const reader = new FileReader();
     reader.onload = function() {
+      console.log("fired  restoreCacheEV");
       signals.fire("restoreCacheEV", "", reader.result);
-      globalThis.location.reload();
     };
     reader.readAsText(fileload.files[0]);
   });
@@ -600,12 +601,13 @@ var LayoutContainer = class extends HTMLElement {
 customElements.define("layout-container", LayoutContainer);
 
 // src/main.ts
+var BOOL = false;
 var appContext = {
-  BYPASS_PIN: false,
+  BYPASS_PIN: BOOL,
   // bypass user PIN input?
-  DEV: false,
+  DEV: BOOL,
   // enable logging
-  LOCAL_DB: false,
+  LOCAL_DB: BOOL,
   // run from local dataService
   LocalDbURL: "http://localhost:9099/",
   RemoteDbURL: "https://kv-dt-rpc.deno.dev/",

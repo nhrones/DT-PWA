@@ -9,27 +9,33 @@
 </head>
 
 <body>
-   <div id="content">
+   
+   <layout-container>
+
       <dialog id="popupDialog">
          <p id="popup_text">Yup!</p>
          <p>Press any key to continue.</p>
       </dialog>
+
       <dialog id="myDialog">
          <label for="pin">Enter PIN</label>
          <input id="pin" type="password" />
       </dialog>
+
       <table id="table">
          <thead id="table-head"></thead>
          <tbody id="table-body"></tbody>
          <tfoot id="table-foot"></tfoot>
       </table>
-   </div>
-   <footer class="footer">
-      <button id='deletebtn' class='rowbtn' hidden>Delete</button>
-      <button id='addbtn' class='rowbtn'>Add New</button>
-      <input id="filesave" class="file" type="file" name="filesave">
-      <input id="fileload" class="file" type="file" name="fileload">
-   </footer>
+
+      <footer class="footer">
+         <button id='deletebtn' class='rowbtn' hidden>Delete</button>
+         <button id='addbtn' class='rowbtn'>Add New</button>
+         <input id="filesave" class="file" type="file" name="filesave">
+         <input id="fileload" class="file" type="file" name="fileload">
+      </footer>
+
+   </layout-container>
 
 </body>
 
