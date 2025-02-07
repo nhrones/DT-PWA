@@ -119,7 +119,6 @@ var KvClient = class {
    * @param {{ rowID: any; type: any; }} result
    */
   handleMutation(result) {
-    console.info(`Mutation event:`, result.type);
   }
   /** set Kv Pin */
   async setKvPin(rawpin) {
@@ -219,7 +218,6 @@ var KvCache = class {
     this.kvClient = new KvClient(this, ctx);
     this.kvClient.init();
     signals.on("restoreCacheEV", "", (result) => {
-      console.log("kvCache got restoreCacheEV signal!");
       this.restoreCache(result);
     });
   }
@@ -231,7 +229,6 @@ var KvCache = class {
     this.dbMap = new Map(pwaObj);
     this.persist();
     const result = this.hydrate();
-    console.log("restoreCache: ", result);
     if (result == "ok") {
       signals.fire("buildDataTableEV", "", this);
     }
@@ -265,7 +262,6 @@ var KvCache = class {
       this.dbMap = new Map([...this.dbMap.entries()].sort());
     }
     const mapString = JSON.stringify(Array.from(this.dbMap.entries()));
-    console.log(mapString);
     const encrypted = signals.xorEncrypt(mapString);
     this.kvClient.set(encrypted);
   }
