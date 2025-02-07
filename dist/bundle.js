@@ -2,7 +2,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../Common/signals.ts
+// ../DT-Common/signals.ts
 function buildEventBus() {
   const eventSubscriptions = /* @__PURE__ */ new Map();
   const newEventBus = {
@@ -43,7 +43,7 @@ function buildEventBus() {
 __name(buildEventBus, "buildEventBus");
 var signals = buildEventBus();
 
-// ../Common/utils.ts
+// ../DT-Common/utils.ts
 var $ = /* @__PURE__ */ __name((id) => document.getElementById(id), "$");
 var on = /* @__PURE__ */ __name((elem, event, listener) => {
   return elem.addEventListener(event, listener);
