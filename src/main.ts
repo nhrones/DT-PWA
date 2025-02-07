@@ -11,7 +11,7 @@ const appContext: AppContext = {
    DEV: LOCAL, // enable logging
    LOCAL_DB: LOCAL, // run from local dataService
    LocalDbURL: "http://localhost:9099/",
-   RemoteDbURL: "https://kv-dt-rpc.deno.dev/",
+   RemoteDbURL: "https://dt-kv-rpc.deno.dev/", //"https://kv-dt-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
    PIN: '', // Encrypted PIN from KvDB
    dbOptions: {

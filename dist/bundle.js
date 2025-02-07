@@ -3,9 +3,9 @@ var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
 // ../DT-Common/signals.ts
-function buildEventBus() {
+function newEventBus() {
   const eventSubscriptions = /* @__PURE__ */ new Map();
-  const newEventBus = {
+  const newEventBus2 = {
     /**
      * on - registers a handler function to be executed when an event is fired
      * @param {key} eventName - event name (one of `TypedEvents` only)!
@@ -38,10 +38,10 @@ function buildEventBus() {
       }
     }
   };
-  return newEventBus;
+  return newEventBus2;
 }
-__name(buildEventBus, "buildEventBus");
-var signals = buildEventBus();
+__name(newEventBus, "newEventBus");
+var signals = newEventBus();
 
 // ../DT-Common/utils.ts
 var $ = /* @__PURE__ */ __name((id) => document.getElementById(id), "$");
@@ -606,7 +606,8 @@ var appContext = {
   LOCAL_DB: LOCAL,
   // run from local dataService
   LocalDbURL: "http://localhost:9099/",
-  RemoteDbURL: "https://kv-dt-rpc.deno.dev/",
+  RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
+  //"https://kv-dt-rpc.deno.dev/",
   RpcURL: "SSERPC/kvRegistration",
   PIN: "",
   // Encrypted PIN from KvDB
