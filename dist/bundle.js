@@ -263,7 +263,6 @@ var KvCache = class {
    * This is called for any mutation of the dbMap (set/delete)
    */
   persist(order = true) {
-    if (this.DEV) console.log("Persisting -> sorted? ", order);
     if (order) {
       this.dbMap = new Map([...this.dbMap.entries()].sort());
     }
@@ -352,6 +351,7 @@ function makeEditableRow(kvCache2) {
       focusedRow?.classList.remove("selected_row");
       focusedRow = row;
       focusedRow.classList.add("selected_row");
+      kvCache2.CTX.FocusedRowKey = focusedRow.dataset.cache_key;
       addBtn.setAttribute("hidden", "");
       deleteBtn.removeAttribute("hidden");
       focusedCell = e.target;
@@ -397,16 +397,14 @@ var table = document.getElementById("table");
 function buildFooter(kvCache2) {
   addBtn2.onclick = (_e) => {
     const newRow = Object.assign({}, kvCache2.schema.sample);
-    const firstColName = Object.keys(newRow)[0];
-    kvCache2.set(newRow[firstColName], newRow);
-    buildDataTable(kvCache2);
-    const lastRow = table.rows[table.rows.length - 1];
-    lastRow.scrollIntoView({ behavior: "smooth" });
+    const keyColName = kvCache2.CTX.dbOptions.schema.keyColumnName;
+    kvCache2.set(newRow[keyColName], newRow);
+    signals.fire("buildDataTableEV", "", kvCache2);
+    signals.fire("scrollToBottomEV", "", "");
   };
   deleteBtn2.onclick = (_e) => {
-    const id = focusedRow.dataset.cache_key;
-    kvCache2.delete(id);
-    buildDataTable(kvCache2);
+    kvCache2.delete(kvCache2.CTX.FocusedRowKey);
+    signals.fire("buildDataTableEV", "", kvCache2);
   };
 }
 __name(buildFooter, "buildFooter");
@@ -446,6 +444,10 @@ function buildDataTable(kvCache2) {
 __name(buildDataTable, "buildDataTable");
 signals.on("buildDataTableEV", "", (cache) => {
   buildDataTable(cache);
+});
+signals.on("scrollToBottomEV", "", () => {
+  const lastRow = tableBody.rows[tableBody.rows.length - 1];
+  lastRow.scrollIntoView({ behavior: "smooth" });
 });
 
 // ../DT-Components/tableHead.ts
@@ -567,35 +569,6 @@ function initDOM(kvCache2) {
 }
 __name(initDOM, "initDOM");
 
-// ../DT-Components/components/Container.ts
-var LayoutContainer = class extends HTMLElement {
-  static {
-    __name(this, "LayoutContainer");
-  }
-  constructor() {
-    super();
-    const containerTemplate = document.createElement("template");
-    containerTemplate.innerHTML = `
-        <slot></slot>
-     `;
-    const style = document.createElement("style");
-    style.textContent = `
-       :host {
-         display: "block";
-         width: 100%;
-         max-width: 100%;
-         margin-left: auto;
-         margin-right: auto;
-         background-color: "black";
-       }
-     `;
-    const shadowRoot = this.attachShadow({ mode: "closed" });
-    shadowRoot.appendChild(style);
-    shadowRoot.appendChild(containerTemplate.content.cloneNode(true));
-  }
-};
-customElements.define("layout-container", LayoutContainer);
-
 // src/main.ts
 var LOCAL = false;
 var appContext = {
@@ -610,9 +583,11 @@ var appContext = {
   RpcURL: "SSERPC/kvRegistration",
   PIN: "",
   // Encrypted PIN from KvDB
+  FocusedRowKey: "",
   dbOptions: {
     schema: {
       dbKey: "PWA",
+      keyColumnName: "host",
       sample: {
         host: "Z",
         login: "",

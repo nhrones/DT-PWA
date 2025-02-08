@@ -14,9 +14,11 @@ const appContext: AppContext = {
    RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
    PIN: '', // Encrypted PIN from KvDB
+   FocusedRowKey: "",
    dbOptions: {
       schema: {
          dbKey: "PWA",
+         keyColumnName:"host",
          sample: {
             host: "Z",
             login: "",
