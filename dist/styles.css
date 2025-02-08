@@ -107,6 +107,8 @@ table thead {
    /* "top" */
 }
 
+td { white-space:pre }
+
 #container {
    width: 100%;
    margin: 0px;
