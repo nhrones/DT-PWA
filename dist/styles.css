@@ -1,22 +1,16 @@
-/* body {
-   background-color: black;
-   color:white;
-   font-family: Arial, Helvetica, sans-serif;
-   margin: 0;
-} */
+
 body {
    color-scheme: dark;
    background-color: #222;
    color: #eee;
    font-family: sans-serif;
 }
-
 .hidden {
    display: none;
 }
 
 #table {
-   margin-left: 50px;
+margin-left: 50px;
 }
 
 #table td,
@@ -24,6 +18,8 @@ body {
    border: 1px solid #554e4e;
    padding: 8px;
 }
+
+td { white-space:pre }
 
 #table tr:nth-child(even) {
    background-color: #222;
@@ -46,21 +42,8 @@ body {
    user-select: none;
 }
 
-#header1 {
-   min-width: 70px;
-}
-
-#header2 {
-   min-width: 300px;
-}
-
-#header5 {
-   width: 50%;
-}
-
-.indicator {
-   font-size: 1rem;
-   font-weight: bold;
+#header7 {
+   min-width: 600px;
 }
 
 button {
@@ -107,8 +90,6 @@ table thead {
    /* "top" */
 }
 
-td { white-space:pre }
-
 #container {
    width: 100%;
    margin: 0px;
@@ -121,27 +102,59 @@ dialog {
    border-width: 2px;
    border-color: red;
    background-color: black;
-}
+ }
 
-dialog::backdrop {
+ dialog::backdrop {
    background-color: BLACK;
-}
+ }
 
-input {
+ input {
    font-size: 1rem;
    border-radius: 10px;
    padding: 12px 20px;
    margin: 8px 0;
    box-sizing: border-box;
-}
+ }
 
-label {
+ label {
    font-size: 1rem;
    margin-right: 10px;
    color: white;
-}
-
+ } 
+ 
 p {
    font-size: 1rem;
    color: white;
+ }
+
+ input[type="checkbox"] {
+   width: 1em;
+   height: 1em;
+}
+
+/* New for Select and Checkbox */
+input[type="checkbox"]:hover {
+   background-color: #e0e0e0;
+   cursor: pointer;
+}
+
+select {
+   padding: 8px;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   background-color: #f1f1f1;
+   font-size: 16px;
+   cursor: pointer;
+   outline: none;
+   width: 35vh;
+   text-align: center;
+}
+
+select:hover {
+   background-color: #e0e0e0;
+}
+
+select:focus {
+   border-color: #214974;
+   box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
 }

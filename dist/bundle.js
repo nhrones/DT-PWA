@@ -250,10 +250,9 @@ var KvCache = class {
         read_only = true;
       }
       columns.push({
-        name: `${key}`,
-        type: `${typeof value}`,
-        readOnly: read_only,
-        order: "ASC"
+        name: key,
+        type: typeof value,
+        readOnly: read_only
       });
     }
     return columns;
@@ -362,8 +361,17 @@ function makeEditableRow(kvCache2) {
         const columnID = focusedCell.dataset.column_id || 0;
         const columnIndex = parseInt(focusedCell.dataset.column_index) || 0;
         const rowObj = kvCache2.get(key);
+        console.log(`focusedCell.onblur:
+            key: ${key} 
+            columnID: ${columnID}   
+            columnIndex: ${columnIndex} 
+            columnIndex: ${columnIndex}
+            `);
+        console.info("rowObj:", rowObj);
         const currentValue = rowObj[columnID];
         const thisValue = focusedCell.textContent;
+        console.log(`focusedCell.onblur
+               columnID: ${columnID}   `);
         if (currentValue !== thisValue) {
           rowObj[columnID] = thisValue;
           if (columnIndex === 0) {
@@ -414,12 +422,20 @@ function buildDataTable(kvCache2) {
   if (querySet) {
     for (let i = 0; i < querySet.length; i++) {
       const obj = querySet[i];
-      let row = `<tr data-cache_key="${obj[kvCache2.columns[0].name]}">
-        `;
+      let row = `<tr data-cache_key="${obj[kvCache2.columns[0].name]}">`;
       for (let i2 = 0; i2 < kvCache2.columns.length; i2++) {
-        row += `<td 
-            data-column_index=${i2} 
-            data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>`;
+        if (kvCache2.columns[i2].type === "boolean") {
+          if (obj[kvCache2.columns[i2].name] === "true") {
+            row += `<td data-column_index=${i2} 
+               data-column_id="${kvCache2.columns[i2].name}"><input type="checkbox" checked></td>`;
+          } else {
+            row += `<td data-column_index=${i2} 
+               data-column_id="${kvCache2.columns[i2].name}"><input type="checkbox"></td>`;
+          }
+        } else {
+          row += `<td data-column_index=${i2} 
+               data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>`;
+        }
       }
       row += "</tr>";
       tableBody.innerHTML += row;
