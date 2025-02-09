@@ -342,8 +342,8 @@ function makeEditableRow(kvCache2) {
   for (const row of Array.from(rows)) {
     if (row.className.startsWith("headerRow")) continue;
     row.onclick = (e) => {
-      const target = e.target;
-      if (focusedRow && focusedCell && e.target != focusedCell) {
+      const { target } = e;
+      if (focusedRow && focusedCell && target !== focusedCell) {
         focusedCell.removeAttribute("contenteditable");
         focusedCell.className = "";
         focusedCell.oninput = null;
@@ -354,24 +354,19 @@ function makeEditableRow(kvCache2) {
       kvCache2.CTX.FocusedRowKey = focusedRow.dataset.cache_key;
       addBtn.setAttribute("hidden", "");
       deleteBtn.removeAttribute("hidden");
-      focusedCell = e.target;
+      focusedCell = target;
       focusedCell.setAttribute("contenteditable", "");
       focusedCell.className = "editable ";
       focusedCell.onblur = () => {
         let key = focusedRow.dataset.cache_key;
-        const col = focusedCell.dataset.column_id || 0;
+        const columnID = focusedCell.dataset.column_id || 0;
         const columnIndex = parseInt(focusedCell.dataset.column_index) || 0;
-        console.log(`focusedCell.onblur key: ${key} col: ${col}, columnIndex ${columnIndex}`);
-        console.info("kvCache", kvCache2.dbMap);
         const rowObj = kvCache2.get(key);
-        const currentValue = rowObj[col];
+        const currentValue = rowObj[columnID];
         const thisValue = focusedCell.textContent;
-        console.log(`Need change?  currentValue: ${currentValue}, thisValue: ${thisValue}`);
         if (currentValue !== thisValue) {
-          rowObj[col] = thisValue;
-          console.log(`Needs key change? columnIndex:${columnIndex} type${typeof columnIndex}`);
+          rowObj[columnID] = thisValue;
           if (columnIndex === 0) {
-            console.log("FIXING KEY");
             const newKey = thisValue;
             if (key !== newKey) {
               kvCache2.delete(key);
@@ -379,7 +374,6 @@ function makeEditableRow(kvCache2) {
               kvCache2.set(key, rowObj);
             }
           } else {
-            console.info(`Calling kvCache.set(${key}`, rowObj);
             kvCache2.set(key, rowObj);
           }
         }
@@ -423,8 +417,9 @@ function buildDataTable(kvCache2) {
       let row = `<tr data-cache_key="${obj[kvCache2.columns[0].name]}">
         `;
       for (let i2 = 0; i2 < kvCache2.columns.length; i2++) {
-        row += `<td data-column_index=${i2} data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>
-            `;
+        row += `<td 
+            data-column_index=${i2} 
+            data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>`;
       }
       row += "</tr>";
       tableBody.innerHTML += row;
