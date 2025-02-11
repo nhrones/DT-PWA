@@ -252,6 +252,7 @@ var KvCache = class {
       columns.push({
         name: key,
         type: typeof value,
+        defaultValue: value,
         readOnly: read_only
       });
     }
@@ -356,22 +357,20 @@ function makeEditableRow(kvCache2) {
       focusedCell = target;
       focusedCell.setAttribute("contenteditable", "");
       focusedCell.className = "editable ";
+      let key = focusedRow.dataset.cache_key;
+      let columnID = focusedCell.dataset.column_id;
+      let columnIndex = parseInt(focusedCell.dataset.column_index) || 0;
+      let rowObj = kvCache2.get(key);
       focusedCell.onblur = () => {
-        let key = focusedRow.dataset.cache_key;
-        const columnID = focusedCell.dataset.column_id || 0;
-        const columnIndex = parseInt(focusedCell.dataset.column_index) || 0;
-        const rowObj = kvCache2.get(key);
-        console.log(`focusedCell.onblur:
-            key: ${key} 
-            columnID: ${columnID}   
-            columnIndex: ${columnIndex} 
-            columnIndex: ${columnIndex}
-            `);
-        console.info("rowObj:", rowObj);
+        let thisValue = focusedCell.textContent;
+        if (focusedCell.tagName === "SELECT") {
+          columnID = focusedCell.parentElement.dataset.column_id;
+          columnIndex = parseInt(focusedCell.parentElement.dataset.column_index) || 0;
+          const theCell = focusedCell;
+          let text = theCell.options[theCell.selectedIndex].text;
+          thisValue = text;
+        }
         const currentValue = rowObj[columnID];
-        const thisValue = focusedCell.textContent;
-        console.log(`focusedCell.onblur
-               columnID: ${columnID}   `);
         if (currentValue !== thisValue) {
           rowObj[columnID] = thisValue;
           if (columnIndex === 0) {
@@ -432,6 +431,9 @@ function buildDataTable(kvCache2) {
             row += `<td data-column_index=${i2} 
                data-column_id="${kvCache2.columns[i2].name}"><input type="checkbox"></td>`;
           }
+        } else if (kvCache2.columns[i2].type === "object") {
+          row += `<td data-column_index=${i2} 
+               data-column_id="${kvCache2.columns[i2].name}">${buildSelect(kvCache2.columns[i2].defaultValue, obj[kvCache2.columns[i2].name])}</td>`;
         } else {
           row += `<td data-column_index=${i2} 
                data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>`;
@@ -453,6 +455,22 @@ function buildDataTable(kvCache2) {
   makeEditableRow(kvCache2);
 }
 __name(buildDataTable, "buildDataTable");
+function buildSelect(options, selected) {
+  let frag = `<select>
+   `;
+  options.forEach((option) => {
+    if (selected === option) {
+      frag += `<option value="${option}" selected>${option}</option>
+         `;
+    } else {
+      frag += `<option value="${option}">${option}</option>
+      `;
+    }
+  });
+  frag += "</select>";
+  return frag;
+}
+__name(buildSelect, "buildSelect");
 signals.on("buildDataTableEV", "", (cache) => {
   buildDataTable(cache);
 });
