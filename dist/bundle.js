@@ -598,6 +598,18 @@ function initDOM(kvCache2) {
 }
 __name(initDOM, "initDOM");
 
+// src/schema.json
+var schema_default = {
+  dbKey: "PWA",
+  keyColumnName: "host",
+  sample: {
+    host: "Z",
+    login: "",
+    pw: "",
+    remarks: ""
+  }
+};
+
 // src/main.ts
 var LOCAL = false;
 var appContext = {
@@ -613,18 +625,7 @@ var appContext = {
   PIN: "",
   // Encrypted PIN from KvDB
   FocusedRowKey: "",
-  dbOptions: {
-    schema: {
-      dbKey: "PWA",
-      keyColumnName: "host",
-      sample: {
-        host: "Z",
-        login: "",
-        pw: "",
-        remarks: ""
-      }
-    }
-  }
+  dbOptions: { schema: schema_default }
 };
 var kvCache = new KvCache(appContext);
 initDOM(kvCache);

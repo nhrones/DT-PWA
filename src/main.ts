@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 import { initDOM, KvCache } from "./deps.ts"
 import type { AppContext } from "./deps.ts"
+import thisSchema from "./schema.json" with { type: "json" };
 
 const LOCAL = false
 /** 
@@ -15,18 +16,7 @@ const appContext: AppContext = {
    RpcURL: "SSERPC/kvRegistration",
    PIN: '', // Encrypted PIN from KvDB
    FocusedRowKey: "",
-   dbOptions: {
-      schema: {
-         dbKey: "PWA",
-         keyColumnName:"host",
-         sample: {
-            host: "Z",
-            login: "",
-            pw: "",
-            remarks: ""
-         }
-      }
-   }
+   dbOptions: { schema: thisSchema }
 }
 
 /**

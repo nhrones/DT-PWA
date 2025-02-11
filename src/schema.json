@@ -1,0 +1,11 @@
+
+{
+   "dbKey": "PWA",
+   "keyColumnName":"host",
+   "sample": {
+      "host": "Z",
+      "login": "",
+      "pw": "",
+      "remarks": ""
+   }
+}
