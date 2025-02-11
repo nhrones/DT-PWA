@@ -133,6 +133,16 @@ var KvClient = class {
       if (this.DEV) console.log(`Set PIN ${rawpin} to: `, pin);
     });
   }
+  addNewRecord() {
+    const newRow = Object.assign({}, this.kvCache.schema.sample);
+    for (const property in newRow) {
+      if (typeof newRow[property] === "object") {
+        newRow[property] = newRow[property][0];
+      }
+    }
+    const keyColName = this.kvCache.CTX.dbOptions.schema.keyColumnName;
+    this.kvCache.set(newRow[keyColName], newRow);
+  }
   /** fetch a querySet */
   async fetchQuerySet() {
     await this.callProcedure(
@@ -140,7 +150,12 @@ var KvClient = class {
       "GET",
       { key: [this.CTX.dbOptions.schema.dbKey] }
     ).then((result) => {
-      this.kvCache.restoreCache(encryptText(result.value));
+      if (result.value) {
+        this.kvCache.restoreCache(encryptText(result.value));
+      } else {
+        this.addNewRecord();
+        signals.fire("buildDataTableEV", "", this.kvCache);
+      }
     });
   }
   /** get row from key */
@@ -398,6 +413,11 @@ var table = document.getElementById("table");
 function buildFooter(kvCache2) {
   addBtn2.onclick = (_e) => {
     const newRow = Object.assign({}, kvCache2.schema.sample);
+    for (const property in newRow) {
+      if (typeof newRow[property] === "object") {
+        newRow[property] = newRow[property][0];
+      }
+    }
     const keyColName = kvCache2.CTX.dbOptions.schema.keyColumnName;
     kvCache2.set(newRow[keyColName], newRow);
     signals.fire("buildDataTableEV", "", kvCache2);
