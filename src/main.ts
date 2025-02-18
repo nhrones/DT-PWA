@@ -1,11 +1,12 @@
 /// <reference lib="dom" />
+
 import { type AppContext, KvCache, TableContainer } from "./deps.ts"
 import thisSchema from "./schema.json" with { type: "json" };
 
 const LOCAL = false
 
 /** 
- * Shared app context -> dependency injected 
+ *  Our shared app context -> dependency injected below
  */
 const appContext: AppContext = {
    BYPASS_PIN: LOCAL, // bypass user PIN input?
@@ -32,4 +33,3 @@ const kvCache = new KvCache(appContext) as KvCache
  * We pass it a KvCache instance (data provider)
  */
 (document.getElementById("table-container") as TableContainer).init(kvCache)
-
