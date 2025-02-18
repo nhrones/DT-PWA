@@ -338,23 +338,15 @@ var KvCache = class {
   }
 };
 
-// ../NewComponents/Components/TableContainer.ts
+// ../Components/Components/TableContainer.ts
 var kvCache;
-var TableContainer = class _TableContainer extends HTMLElement {
+var TableContainer = class extends HTMLElement {
   static {
     __name(this, "TableContainer");
   }
   static register() {
     customElements.define("table-container", this);
   }
-  static style = `:host {
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      height: 80%;
-      margin-bottom: 11%;
-      background-color: black;
-   }`;
   table;
   tablehead;
   tableBody;
@@ -362,21 +354,15 @@ var TableContainer = class _TableContainer extends HTMLElement {
   focusedCell;
   constructor() {
     super();
-    const shadowRoot = this.attachShadow({ mode: "open" });
-    const containerTemplate = document.createElement("template");
-    containerTemplate.innerHTML = `
-        <slot></slot>
-     `;
-    let sheet = new CSSStyleSheet();
-    sheet.replaceSync(_TableContainer.style);
-    shadowRoot.adoptedStyleSheets = [sheet];
-    shadowRoot.appendChild(containerTemplate.content.cloneNode(true));
+    this.attachShadow({ mode: "open" });
+    let template = document.getElementById("table-template");
+    this.shadowRoot.append(template.content.cloneNode(true));
   }
   init(thisCache) {
     kvCache = thisCache;
-    this.table = document.getElementById("table");
-    this.tableBody = document.getElementById("table-body");
-    this.tablehead = document.getElementById("table-head");
+    this.table = this.shadowRoot.getElementById("table");
+    this.tableBody = this.shadowRoot.getElementById("table-body");
+    this.tablehead = this.shadowRoot.getElementById("table-head");
     signals.on("buildDataTableEV", "", (cache) => {
       this.buildDataTable();
     });
@@ -429,7 +415,7 @@ var TableContainer = class _TableContainer extends HTMLElement {
       }
     }
     for (let i = 0; i < kvCache.columns.length; i++) {
-      const el = document.getElementById(`header${i + 1}`);
+      const el = this.shadowRoot.getElementById(`header${i + 1}`);
       el.onclick = (_e) => {
         this.resetFocusedRow();
         this.buildDataTable();
@@ -440,7 +426,7 @@ var TableContainer = class _TableContainer extends HTMLElement {
   }
   /** build table row event handlers for editing */
   makeEditableRow(kvCache3) {
-    const rows = document.querySelectorAll("tr");
+    const rows = this.shadowRoot.querySelectorAll("tr");
     for (const row of Array.from(rows)) {
       if (row.className.startsWith("headerRow")) continue;
       row.onclick = (e) => {
@@ -514,30 +500,25 @@ var TableContainer = class _TableContainer extends HTMLElement {
 };
 TableContainer.register();
 
-// ../NewComponents/Components/AppFooter.ts
+// ../Components/Components/FootContainer.ts
 var TableFooter = class extends HTMLElement {
   static {
     __name(this, "TableFooter");
   }
-  shadowRoot;
-  template;
   addBtn;
   deleteBtn;
   /** ctor */
   constructor() {
     super();
-    this.shadowRoot = this.attachShadow({ mode: "closed" });
+    this.attachShadow({ mode: "open" });
+    let template = document.getElementById("footer-template");
+    this.shadowRoot.append(template.content.cloneNode(true));
   }
   /** 
-   * Get our template the append a clone to this shadowRoot
-   *  
-   * Setup the `add` and `delete` button event handlerss.
-   *  
+   * Setup the `add` and `delete` button event handlers.
    * Setup all required signals
   */
   connectedCallback() {
-    this.template = document.getElementById("table-footer");
-    this.shadowRoot.append(this.template.content.cloneNode(true));
     this.addBtn = this.shadowRoot.getElementById("addbtn");
     this.addBtn.onclick = (_e) => {
       const newRow = Object.assign({}, kvCache.schema.sample);
@@ -593,62 +574,25 @@ var TableFooter = class extends HTMLElement {
 };
 customElements.define("table-footer", TableFooter);
 
-// ../NewComponents/Components/PinContainer.ts
-var PinContainer = class _PinContainer extends HTMLElement {
+// ../Components/Components/PinContainer.ts
+var PinContainer = class extends HTMLElement {
   static {
     __name(this, "PinContainer");
   }
   static register() {
     customElements.define("pin-container", this);
   }
-  static style = `
-   dialog {
-      border-radius: 1rem;
-      border-width: 2px;
-      border-color: red;
-      background-color: black;
-    }
-   
-    dialog::backdrop {
-      background-color: BLACK;
-    }
-   
-    input {
-      font-size: 1rem;
-      border-radius: 10px;
-      padding: 12px 20px;
-      margin: 8px 0;
-      box-sizing: border-box;
-    }
-   
-    label {
-      font-size: 1rem;
-      margin-right: 10px;
-      color: white;
-    } 
-    
-`;
   constructor() {
     super();
-    let shadowroot = this.attachShadow({ mode: "open" });
-    let sheet = new CSSStyleSheet();
-    sheet.replaceSync(_PinContainer.style);
-    shadowroot.adoptedStyleSheets = [sheet];
-    shadowroot.innerHTML = `<dialog id="popupDialog">
-         <p id="popup_text">Yup!</p>
-         <p>Press any key to continue.</p>
-      </dialog>
-
-      <dialog id="pinDialog">
-         <label for="pin">Enter PIN</label>
-         <input id="pin" type="password" />
-      </dialog>`;
+    this.attachShadow({ mode: "open" });
+    let template = document.getElementById("pin-template");
+    this.shadowRoot.append(template.content.cloneNode(true));
   }
   init(kvCache3) {
-    const popupDialog = this.shadowRoot?.getElementById("popupDialog");
-    const pinDialog = this.shadowRoot?.getElementById("pinDialog");
-    const pinInput = this.shadowRoot?.getElementById("pin");
-    const popupText = this.shadowRoot?.getElementById("popup_text");
+    const popupDialog = this.shadowRoot.getElementById("popupDialog");
+    const pinDialog = this.shadowRoot.getElementById("pinDialog");
+    const pinInput = this.shadowRoot.getElementById("pin");
+    const popupText = this.shadowRoot.getElementById("popup_text");
     on(popupDialog, "click", (event) => {
       event.preventDefault();
       popupDialog.close();

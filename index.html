@@ -12,32 +12,127 @@
 
    <pin-container id="pin-container"></pin-container>
 
-   <table-container id="table-container">
+   <table-container id="table-container"></table-container>
+
+   <table-footer id="footer"></table-footer>
+
+   <template id="pin-template">
+
+      <dialog id="popupDialog">
+         <p id="popup_text">Yup!</p>
+         <p>Press any key to continue.</p>
+      </dialog>
+
+      <dialog id="pinDialog">
+         <label for="pin">Enter PIN</label>
+         <input id="pin" type="password" />
+      </dialog>
+
+      <style>
+         dialog {
+            border-radius: 1rem;
+            border-width: 2px;
+            border-color: red;
+            background-color: black;
+         }
+
+         dialog::backdrop {
+            background-color: BLACK;
+         }
+
+         input {
+            font-size: 1rem;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+         }
+
+         label {
+            font-size: 1rem;
+            margin-right: 10px;
+            color: white;
+         }
+      </style>
+
+   </template>
+
+   <template id="table-template">
+
       <table id="table">
          <thead id="table-head"></thead>
          <tbody id="table-body"></tbody>
       </table>
-   </table-container>
-   
-   <table-footer id="footer"></table-footer>
 
-   <template id="table-footer">
+      <style>
+         :host {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: 80%;
+            margin-bottom: 11%;
+            background-color: black;
+         }
 
-      <!-- HTML Template -->
+         table thead {
+            position: sticky;
+            inset-block-start: 0;
+         }
+
+         #table {
+            margin-left: 50px;
+         }
+
+         #table td,
+         #table th {
+            border: 1px solid #554e4e;
+            padding: 8px;
+         }
+
+         td {
+            white-space: pre
+         }
+
+         #table tr:nth-child(even) {
+            background-color: #222;
+         }
+
+         #table tr:hover {
+            background-color: #242;
+         }
+
+         .selected_row td {
+            background-color: #363;
+         }
+
+         #table th {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+            user-select: none;
+         }
+
+         .editable {
+            color: white;
+            font-weight: bold;
+            border: 1px solid LightGoldenrodYellow;
+         }
+
+      </style>
+      
+   </template>
+
+   <template id="footer-template">
+
       <footer class="footer">
          <button id='deletebtn' hidden>Delete</button>
          <button id='addbtn'>Add New</button>
          <input id="fileload" type="file" name="fileload">
       </footer>
 
-      <!-- Style Template -->
       <style>
-         body {
-            color-scheme: dark;
-            background-color: #222;
-            color: #eee;
-            font-family: sans-serif;
-         }
 
          footer {
             position: fixed;
@@ -67,15 +162,10 @@
             font-size: 16px;
          }
 
-         .editable {
-            color: white;
-            font-weight: bold;
-            border: 1px solid LightGoldenrodYellow;
-         }
-
          input[type="file"] {
             display: none;
          }
+
       </style>
 
    </template>
