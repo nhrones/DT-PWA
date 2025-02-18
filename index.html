@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-   <title>PWA</title>
+   <title>Bill Pay</title>
    <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;,">
    <link rel="stylesheet" href="./dist/styles.css" />
    <script type="module" src="./dist/bundle.js"></script>
@@ -10,32 +10,75 @@
 
 <body>
 
-   <div id="pin-container">
-      <dialog id="popupDialog">
-         <p id="popup_text">Yup!</p>
-         <p>Press any key to continue.</p>
-      </dialog>
+   <pin-container id="pin-container"></pin-container>
 
-      <dialog id="myDialog">
-         <label for="pin">Enter PIN</label>
-         <input id="pin" type="password" />
-      </dialog>
-   </div>
-
-   <div id="container">
+   <table-container id="table-container">
       <table id="table">
          <thead id="table-head"></thead>
          <tbody id="table-body"></tbody>
       </table>
-   </div>
+   </table-container>
+   
+   <table-footer id="footer"></table-footer>
 
-   <footer class="footer">
-      <button id='deletebtn' class='rowbtn' hidden>Delete</button>
-      <button id='addbtn' class='rowbtn'>Add New</button>
-      <input id="filesave" class="file" type="file" name="filesave">
-      <input id="fileload" class="file" type="file" name="fileload">
-   </footer>
+   <template id="table-footer">
 
+      <!-- HTML Template -->
+      <footer class="footer">
+         <button id='deletebtn' hidden>Delete</button>
+         <button id='addbtn'>Add New</button>
+         <input id="fileload" type="file" name="fileload">
+      </footer>
+
+      <!-- Style Template -->
+      <style>
+         body {
+            color-scheme: dark;
+            background-color: #222;
+            color: #eee;
+            font-family: sans-serif;
+         }
+
+         footer {
+            position: fixed;
+            height: 10%;
+            width: 100%;
+            padding-top: 2px;
+            bottom: 0;
+            left: 0;
+            clear: both;
+            background-color: black;
+            color: white;
+            overflow: auto;
+         }
+
+         button {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-right: 10px;
+            margin-top: 10px;
+            width: 110px;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+         }
+
+         .editable {
+            color: white;
+            font-weight: bold;
+            border: 1px solid LightGoldenrodYellow;
+         }
+
+         input[type="file"] {
+            display: none;
+         }
+      </style>
+
+   </template>
 
 </body>
 

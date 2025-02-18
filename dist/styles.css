@@ -42,10 +42,6 @@ td { white-space:pre }
    user-select: none;
 }
 
-#header7 {
-   min-width: 600px;
-}
-
 button {
    background-color: #04AA6D;
    border: none;
@@ -87,16 +83,8 @@ footer {
 table thead {
    position: sticky;
    inset-block-start: 0;
-   /* "top" */
 }
-
-#container {
-   width: 100%;
-   margin: 0px;
-   height: 80%;
-   margin-bottom: 11%;
-} 
-
+/* 
 dialog {
    border-radius: 1rem;
    border-width: 2px;
@@ -114,7 +102,7 @@ dialog {
    padding: 12px 20px;
    margin: 8px 0;
    box-sizing: border-box;
- }
+ } */
 
  label {
    font-size: 1rem;
@@ -127,34 +115,7 @@ p {
    color: white;
  }
 
- input[type="checkbox"] {
-   width: 1em;
-   height: 1em;
-}
-
-/* New for Select and Checkbox */
-input[type="checkbox"]:hover {
-   background-color: #e0e0e0;
-   cursor: pointer;
-}
-
-select {
-   padding: 8px;
-   border: 1px solid #ccc;
-   border-radius: 4px;
-   background-color: #f1f1f1;
-   font-size: 16px;
-   cursor: pointer;
-   outline: none;
-   width: 35vh;
-   text-align: center;
-}
-
-select:hover {
-   background-color: #e0e0e0;
-}
-
-select:focus {
-   border-color: #214974;
-   box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
-}
+ select {
+   font-size: 1rem;
+   color: white;
+ }

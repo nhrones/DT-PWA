@@ -1,3 +1,3 @@
-export * from "../../DT-DataProvider/mod.ts"
-export * from "../../DT-Components/mod.ts"
-export * from "../../DT-Common/mod.ts"
+export * from "../../DataProvider/mod.ts"
+export * from "../../Components/mod.ts"
+export * from "../../Common/mod.ts"
