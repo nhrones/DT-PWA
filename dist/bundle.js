@@ -2,7 +2,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../Common/signals.ts
+// ../../Common/signals.ts
 function newEventBus() {
   const eventSubscriptions = /* @__PURE__ */ new Map();
   const newEventBus2 = {
@@ -43,7 +43,7 @@ function newEventBus() {
 __name(newEventBus, "newEventBus");
 var signals = newEventBus();
 
-// ../Common/utils.ts
+// ../../Common/utils.ts
 var on = /* @__PURE__ */ __name((elem, event, listener) => {
   return elem.addEventListener(event, listener);
 }, "on");
@@ -57,7 +57,7 @@ function encryptText(text) {
 }
 __name(encryptText, "encryptText");
 
-// ../DataProvider/kvClient.ts
+// ../../Data/DataProvider/kvClient.ts
 var KvClient = class {
   static {
     __name(this, "KvClient");
@@ -87,7 +87,6 @@ var KvClient = class {
     console.log("CONNECTING");
     eventSource.addEventListener("open", () => {
       this.callProcedure(this.ServiceURL, "GET", { key: ["PIN"] }).then((result) => {
-        const pin = encryptText(result.value);
         this.CTX.PIN = result.value;
         this.fetchQuerySet();
       });
@@ -180,6 +179,23 @@ var KvClient = class {
       return { Error: e };
     }
   }
+  /** get row from key */
+  delete(key) {
+    try {
+      this.callProcedure(
+        this.ServiceURL,
+        "DELETE",
+        {
+          key,
+          value: ""
+        }
+      ).then((result) => {
+        console.info("Delete result: ", result);
+      });
+    } catch (e) {
+      return { Error: e };
+    }
+  }
   /** 
    * Make an Asynchronous Remote Proceedure Call
    *  
@@ -208,7 +224,7 @@ var KvClient = class {
   }
 };
 
-// ../DataProvider/kvCache.ts
+// ../../Data/DataProvider/kvCache.ts
 var KvCache = class {
   static {
     __name(this, "KvCache");
@@ -338,7 +354,7 @@ var KvCache = class {
   }
 };
 
-// ../Components/Components/TableContainer.ts
+// ../../View/Components/Components/TableContainer.ts
 var kvCache;
 var TableContainer = class extends HTMLElement {
   static {
@@ -500,7 +516,7 @@ var TableContainer = class extends HTMLElement {
 };
 TableContainer.register();
 
-// ../Components/Components/FootContainer.ts
+// ../../View/Components/Components/FootContainer.ts
 var TableFooter = class extends HTMLElement {
   static {
     __name(this, "TableFooter");
@@ -574,7 +590,7 @@ var TableFooter = class extends HTMLElement {
 };
 customElements.define("table-footer", TableFooter);
 
-// ../Components/Components/PinContainer.ts
+// ../../View/Components/Components/PinContainer.ts
 var PinContainer = class extends HTMLElement {
   static {
     __name(this, "PinContainer");
@@ -679,5 +695,6 @@ var appContext = {
   FocusedRowKey: "",
   dbOptions: { schema: schema_default }
 };
+document.title = schema_default.dbKey;
 var kvCache2 = new KvCache(appContext);
 document.getElementById("table-container").init(kvCache2);

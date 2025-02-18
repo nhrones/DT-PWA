@@ -3,6 +3,7 @@ import { type AppContext, KvCache, TableContainer } from "./deps.ts"
 import thisSchema from "./schema.json" with { type: "json" };
 
 const LOCAL = false
+
 /** 
  * Shared app context -> dependency injected 
  */
@@ -17,6 +18,8 @@ const appContext: AppContext = {
    FocusedRowKey: "",
    dbOptions: { schema: thisSchema }
 }
+
+document.title = thisSchema.dbKey
 
 /**
  * Initiate async data loading and data provider
