@@ -14,4 +14,4 @@
 
 NOTE: The three files `index.html`, `bundle.js`, and `styles.css`, all come from `/Apps/Base/`.    
 These are common shared assets, and the build/bundle process only happens there.    
-Only `main.js` is unique in this app folder.
+Only the `main.js` file is unique in this app folder.
