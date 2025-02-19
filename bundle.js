@@ -355,7 +355,73 @@ var KvCache = class {
   }
 };
 
-// ../../Components/TableContainer.ts
+// ../../Components/Table/template.ts
+var TableTemplate = `
+<table id="table">
+   <thead id="table-head"></thead>
+   <tbody id="table-body"></tbody>
+</table>
+
+<style>
+   :host {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: 80%;
+      margin-bottom: 11%;
+      background-color: black;
+   }
+
+   table thead {
+      position: sticky;
+      inset-block-start: 0;
+   }
+
+   #table {
+      margin-left: 50px;
+   }
+
+   #table td,
+   #table th {
+      border: 1px solid #554e4e;
+      padding: 8px;
+   }
+
+   td {
+      white-space: pre
+   }
+
+   #table tr:nth-child(even) {
+      background-color: #222;
+   }
+
+   #table tr:hover {
+      background-color: #242;
+   }
+
+   .selected_row td {
+      background-color: #363;
+   }
+
+   #table th {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      text-align: left;
+      background-color: #04AA6D;
+      color: white;
+      user-select: none;
+   }
+
+   .editable {
+      color: white;
+      font-weight: bold;
+      border: 1px solid LightGoldenrodYellow;
+   }
+
+</style>
+`;
+
+// ../../Components/Table/TableContainer.ts
 var kvCache;
 var TableContainer = class extends HTMLElement {
   static {
@@ -372,7 +438,8 @@ var TableContainer = class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    let template = document.getElementById("table-template");
+    let template = document.createElement("template");
+    template.innerHTML = TableTemplate;
     this.shadowRoot.append(template.content.cloneNode(true));
   }
   //init(thisCache: KvCacheType) {
@@ -518,10 +585,58 @@ var TableContainer = class extends HTMLElement {
 };
 TableContainer.register();
 
-// ../../Components/FootContainer.ts
+// ../../Components/Footer/template.ts
+var FooterTemplate = `
+      <footer class="footer">
+         <button id='deletebtn' hidden>Delete</button>
+         <button id='addbtn'>Add New</button>
+         <input id="fileload" type="file" name="fileload">
+      </footer>
+
+      <style>
+
+         footer {
+            position: fixed;
+            height: 10%;
+            width: 100%;
+            padding-top: 2px;
+            bottom: 0;
+            left: 0;
+            clear: both;
+            background-color: black;
+            color: white;
+            overflow: auto;
+         }
+
+         button {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-right: 10px;
+            margin-top: 10px;
+            width: 110px;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+         }
+
+         input[type="file"] {
+            display: none;
+         }
+
+      </style>
+`;
+
+// ../../Components/Footer/FootContainer.ts
 var TableFooter = class extends HTMLElement {
   static {
     __name(this, "TableFooter");
+  }
+  static register() {
+    customElements.define("table-footer", this);
   }
   addBtn;
   deleteBtn;
@@ -529,7 +644,8 @@ var TableFooter = class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    let template = document.getElementById("footer-template");
+    let template = document.createElement("template");
+    template.innerHTML = FooterTemplate;
     this.shadowRoot.append(template.content.cloneNode(true));
   }
   /** 
@@ -590,9 +706,49 @@ var TableFooter = class extends HTMLElement {
     });
   }
 };
-customElements.define("table-footer", TableFooter);
+TableFooter.register();
 
-// ../../Components/PinContainer.ts
+// ../../Components/Pin/template.ts
+var PinTemplate = `
+<dialog id="popupDialog">
+   <p id="popup_text">Yup!</p>
+   <p>Press any key to continue.</p>
+</dialog>
+
+<dialog id="pinDialog">
+   <label for="pin">Enter PIN</label>
+   <input id="pin" type="password" />
+</dialog>
+
+<style>
+   dialog {
+      border-radius: 1rem;
+      border-width: 2px;
+      border-color: red;
+      background-color: black;
+   }
+
+   dialog::backdrop {
+      background-color: BLACK;
+   }
+
+   input {
+      font-size: 1rem;
+      border-radius: 10px;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+   }
+
+   label {
+      font-size: 1rem;
+      margin-right: 10px;
+      color: white;
+   }
+</style>
+`;
+
+// ../../Components/Pin/PinContainer.ts
 var PinContainer = class extends HTMLElement {
   static {
     __name(this, "PinContainer");
@@ -603,7 +759,8 @@ var PinContainer = class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    let template = document.getElementById("pin-template");
+    let template = document.createElement("template");
+    template.innerHTML = PinTemplate;
     this.shadowRoot.append(template.content.cloneNode(true));
   }
   init(kvCache2) {
