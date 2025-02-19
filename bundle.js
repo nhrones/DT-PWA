@@ -355,8 +355,9 @@ var KvCache = class {
   }
 };
 
-// ../../Components/Table/template.ts
-var TableTemplate = `
+// ../../Components/Table/tableTemplate.ts
+var TableTemplate = document.createElement("template");
+TableTemplate.innerHTML = `
 <table id="table">
    <thead id="table-head"></thead>
    <tbody id="table-body"></tbody>
@@ -438,9 +439,7 @@ var TableContainer = class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    let template = document.createElement("template");
-    template.innerHTML = TableTemplate;
-    this.shadowRoot.append(template.content.cloneNode(true));
+    this.shadowRoot.append(TableTemplate.content.cloneNode(true));
   }
   //init(thisCache: KvCacheType) {
   init(appContext) {
@@ -585,49 +584,50 @@ var TableContainer = class extends HTMLElement {
 };
 TableContainer.register();
 
-// ../../Components/Footer/template.ts
-var FooterTemplate = `
-      <footer class="footer">
-         <button id='deletebtn' hidden>Delete</button>
-         <button id='addbtn'>Add New</button>
-         <input id="fileload" type="file" name="fileload">
-      </footer>
+// ../../Components/Footer/footTemplate.ts
+var FooterTemplate = document.createElement("template");
+FooterTemplate.innerHTML = `
+<footer class="footer">
+   <button id='deletebtn' hidden>Delete</button>
+   <button id='addbtn'>Add New</button>
+   <input id="fileload" type="file" name="fileload">
+</footer>
 
-      <style>
+<style>
 
-         footer {
-            position: fixed;
-            height: 10%;
-            width: 100%;
-            padding-top: 2px;
-            bottom: 0;
-            left: 0;
-            clear: both;
-            background-color: black;
-            color: white;
-            overflow: auto;
-         }
+   footer {
+      position: fixed;
+      height: 10%;
+      width: 100%;
+      padding-top: 2px;
+      bottom: 0;
+      left: 0;
+      clear: both;
+      background-color: black;
+      color: white;
+      overflow: auto;
+   }
 
-         button {
-            background-color: #04AA6D;
-            border: none;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            margin-right: 10px;
-            margin-top: 10px;
-            width: 110px;
-            cursor: pointer;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 16px;
-         }
+   button {
+      background-color: #04AA6D;
+      border: none;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      margin-right: 10px;
+      margin-top: 10px;
+      width: 110px;
+      cursor: pointer;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 16px;
+   }
 
-         input[type="file"] {
-            display: none;
-         }
+   input[type="file"] {
+      display: none;
+   }
 
-      </style>
+</style>
 `;
 
 // ../../Components/Footer/FootContainer.ts
@@ -644,9 +644,7 @@ var TableFooter = class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    let template = document.createElement("template");
-    template.innerHTML = FooterTemplate;
-    this.shadowRoot.append(template.content.cloneNode(true));
+    this.shadowRoot.append(FooterTemplate.content.cloneNode(true));
   }
   /** 
    * Setup the `add` and `delete` button event handlers.
@@ -708,8 +706,9 @@ var TableFooter = class extends HTMLElement {
 };
 TableFooter.register();
 
-// ../../Components/Pin/template.ts
-var PinTemplate = `
+// ../../Components/Pin/pinTemplate.ts
+var PinTemplate = document.createElement("template");
+PinTemplate.innerHTML = `
 <dialog id="popupDialog">
    <p id="popup_text">Yup!</p>
    <p>Press any key to continue.</p>
@@ -759,9 +758,7 @@ var PinContainer = class extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    let template = document.createElement("template");
-    template.innerHTML = PinTemplate;
-    this.shadowRoot.append(template.content.cloneNode(true));
+    this.shadowRoot.append(PinTemplate.content.cloneNode(true));
   }
   init(kvCache2) {
     const popupDialog = this.shadowRoot.getElementById("popupDialog");
