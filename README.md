@@ -1,7 +1,7 @@
 # KV-PWA
   - Pure vanilla HTML, CSS, javascript application - no frameworks
   - Local-First, Zero dependencies
-  - Maintaina a local cache, and persists to a remote DenoKv
+  - Maintains a local cache, and persists it to a remote DenoKv
 
 ## About this Proof Of Concept demo
  - All data is persisted and hydrated as a single key-value record in KvDB.       
