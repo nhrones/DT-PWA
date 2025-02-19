@@ -1,7 +1,17 @@
 /// <reference lib="dom" />
 
 import { type AppContext, KvCache, TableContainer } from "./deps.ts"
-import thisSchema from "./schema.json" with { type: "json" };
+
+const thisSchema = {
+   dbKey: "PWA",
+   keyColumnName:"host",
+   sample: {
+      host: "Z",
+      login: "",
+      pw: "",
+      remarks: ""
+   }
+}
 
 const LOCAL = false
 

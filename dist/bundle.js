@@ -666,8 +666,8 @@ var PinContainer = class extends HTMLElement {
 };
 PinContainer.register();
 
-// src/schema.json
-var schema_default = {
+// src/main.ts
+var thisSchema = {
   dbKey: "PWA",
   keyColumnName: "host",
   sample: {
@@ -677,8 +677,6 @@ var schema_default = {
     remarks: ""
   }
 };
-
-// src/main.ts
 var LOCAL = false;
 var appContext = {
   BYPASS_PIN: LOCAL,
@@ -693,8 +691,8 @@ var appContext = {
   PIN: "",
   // Encrypted PIN from KvDB
   FocusedRowKey: "",
-  dbOptions: { schema: schema_default }
+  dbOptions: { schema: thisSchema }
 };
-document.title = schema_default.dbKey;
+document.title = thisSchema.dbKey;
 var kvCache2 = new KvCache(appContext);
 document.getElementById("table-container").init(kvCache2);

@@ -13,7 +13,7 @@
          "server.ts"
       ],
       "options": {
-         "cwd": "../DT-KV-RPC/"
+         "cwd": "../../Data/DT-KV-RPC/"
       },
       "problemMatcher": [
          "$deno"
