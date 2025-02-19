@@ -44,6 +44,7 @@ __name(newEventBus, "newEventBus");
 var signals = newEventBus();
 
 // ../../Common/utils.ts
+var $ = /* @__PURE__ */ __name((id) => document.getElementById(id), "$");
 var on = /* @__PURE__ */ __name((elem, event, listener) => {
   return elem.addEventListener(event, listener);
 }, "on");
@@ -374,8 +375,9 @@ var TableContainer = class extends HTMLElement {
     let template = document.getElementById("table-template");
     this.shadowRoot.append(template.content.cloneNode(true));
   }
-  init(thisCache) {
-    kvCache = thisCache;
+  //init(thisCache: KvCacheType) {
+  init(appContext) {
+    kvCache = new KvCache(appContext);
     this.table = this.shadowRoot.getElementById("table");
     this.tableBody = this.shadowRoot.getElementById("table-body");
     this.tablehead = this.shadowRoot.getElementById("table-head");
@@ -441,7 +443,7 @@ var TableContainer = class extends HTMLElement {
     this.makeEditableRow(kvCache);
   }
   /** build table row event handlers for editing */
-  makeEditableRow(kvCache3) {
+  makeEditableRow(kvCache2) {
     const rows = this.shadowRoot.querySelectorAll("tr");
     for (const row of Array.from(rows)) {
       if (row.className.startsWith("headerRow")) continue;
@@ -455,7 +457,7 @@ var TableContainer = class extends HTMLElement {
         this.focusedRow?.classList.remove("selected_row");
         this.focusedRow = row;
         this.focusedRow.classList.add("selected_row");
-        kvCache3.CTX.FocusedRowKey = this.focusedRow.dataset.cache_key;
+        kvCache2.CTX.FocusedRowKey = this.focusedRow.dataset.cache_key;
         signals.fire("resetButtons", "", false);
         this.focusedCell = target;
         this.focusedCell.setAttribute("contenteditable", "");
@@ -463,7 +465,7 @@ var TableContainer = class extends HTMLElement {
         let key = this.focusedRow.dataset.cache_key;
         let columnID = this.focusedCell.dataset.column_id;
         let columnIndex = parseInt(this.focusedCell.dataset.column_index) || 0;
-        let rowObj = kvCache3.get(key);
+        let rowObj = kvCache2.get(key);
         this.focusedCell.onblur = () => {
           let thisValue = this.focusedCell.textContent;
           if (this.focusedCell.tagName === "SELECT") {
@@ -479,12 +481,12 @@ var TableContainer = class extends HTMLElement {
             if (columnIndex === 0) {
               const newKey = thisValue;
               if (key !== newKey) {
-                kvCache3.delete(key);
+                kvCache2.delete(key);
                 key = thisValue;
-                kvCache3.set(key, rowObj);
+                kvCache2.set(key, rowObj);
               }
             } else {
-              kvCache3.set(key, rowObj);
+              kvCache2.set(key, rowObj);
             }
           }
         };
@@ -604,7 +606,7 @@ var PinContainer = class extends HTMLElement {
     let template = document.getElementById("pin-template");
     this.shadowRoot.append(template.content.cloneNode(true));
   }
-  init(kvCache3) {
+  init(kvCache2) {
     const popupDialog = this.shadowRoot.getElementById("popupDialog");
     const pinDialog = this.shadowRoot.getElementById("pinDialog");
     const pinInput = this.shadowRoot.getElementById("pin");
@@ -634,9 +636,9 @@ var PinContainer = class extends HTMLElement {
       const pinIn = pinInput;
       const pinDia = pinDialog;
       const ecriptedPin = encryptText(pinIn.value);
-      if (event.key === "Enter" || ecriptedPin === kvCache3.CTX.PIN) {
+      if (event.key === "Enter" || ecriptedPin === kvCache2.CTX.PIN) {
         pinTryCount += 1;
-        if (ecriptedPin === kvCache3.CTX.PIN) {
+        if (ecriptedPin === kvCache2.CTX.PIN) {
           pinIn.value = "";
           pinOK = true;
           pinDia.close();
@@ -656,7 +658,7 @@ var PinContainer = class extends HTMLElement {
         }
       }
     });
-    if (kvCache3.CTX.BYPASS_PIN) {
+    if (kvCache2.CTX.BYPASS_PIN) {
       pinOK = true;
     } else {
       pinDialog.showModal();
@@ -665,34 +667,16 @@ var PinContainer = class extends HTMLElement {
   }
 };
 PinContainer.register();
-
-// src/main.ts
-var thisSchema = {
-  dbKey: "PWA",
-  keyColumnName: "host",
-  sample: {
-    host: "Z",
-    login: "",
-    pw: "",
-    remarks: ""
-  }
+export {
+  $,
+  KvCache,
+  KvClient,
+  PinContainer,
+  TableContainer,
+  TableFooter,
+  encryptText,
+  kvCache,
+  newEventBus,
+  on,
+  signals
 };
-var LOCAL = false;
-var appContext = {
-  BYPASS_PIN: LOCAL,
-  // bypass user PIN input?
-  DEV: LOCAL,
-  // enable logging
-  LOCAL_DB: LOCAL,
-  // run from local dataService
-  LocalDbURL: "http://localhost:9099/",
-  RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
-  RpcURL: "SSERPC/kvRegistration",
-  PIN: "",
-  // Encrypted PIN from KvDB
-  FocusedRowKey: "",
-  dbOptions: { schema: thisSchema }
-};
-document.title = thisSchema.dbKey;
-var kvCache2 = new KvCache(appContext);
-document.getElementById("table-container").init(kvCache2);
