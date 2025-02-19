@@ -355,7 +355,7 @@ var KvCache = class {
   }
 };
 
-// ../../View/Components/Components/TableContainer.ts
+// ../../Components/TableContainer.ts
 var kvCache;
 var TableContainer = class extends HTMLElement {
   static {
@@ -518,7 +518,7 @@ var TableContainer = class extends HTMLElement {
 };
 TableContainer.register();
 
-// ../../View/Components/Components/FootContainer.ts
+// ../../Components/FootContainer.ts
 var TableFooter = class extends HTMLElement {
   static {
     __name(this, "TableFooter");
@@ -592,7 +592,7 @@ var TableFooter = class extends HTMLElement {
 };
 customElements.define("table-footer", TableFooter);
 
-// ../../View/Components/Components/PinContainer.ts
+// ../../Components/PinContainer.ts
 var PinContainer = class extends HTMLElement {
   static {
     __name(this, "PinContainer");
