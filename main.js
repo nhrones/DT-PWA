@@ -1,4 +1,12 @@
 
+/** 
+ * A unique schema object 
+ * Note that the data-provider and the UI both use
+ * this object for auto-configuration.
+ * 
+ * In the schema-sample, a boolean value will produce a checkbox,
+ * and a string array will be auto-configured as a select element.
+ */
 const thisSchema = {
    dbKey: "PWA",
    keyColumnName:"host",
@@ -16,27 +24,22 @@ const LOCAL = false
  *  Our shared app context -> dependency injected below
  */
 const appContext = {
-   BYPASS_PIN: LOCAL, // bypass user PIN input?
-   DEV: LOCAL, // enable logging
-   LOCAL_DB: LOCAL, // run from local dataService
+   BYPASS_PIN: LOCAL,
+   DEV: LOCAL,
+   LOCAL_DB: LOCAL,
    LocalDbURL: "http://localhost:9099/",
    RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
-   PIN: '', // Encrypted PIN from KvDB
+   PIN: '',
    FocusedRowKey: "",
    dbOptions: { schema: thisSchema }
 }
 
+// set the title to the dbKey value
 document.title = thisSchema.dbKey
 
 /**
- * Initiate async data loading and data provider
- * We pass in theabove context for the service
- */
-//const kvCache = new KvCache(appContext) as KvCache
-
-/**
  * Initialize our Custom DataTable UI
- * We pass it a KvCache instance (data provider)
+ * We pass it an appContext (for the data provider)
  */
 document.getElementById("table-container").init(appContext)
