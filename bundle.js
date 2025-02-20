@@ -436,17 +436,17 @@ var TableContainer = class extends HTMLElement {
   tableBody;
   focusedRow;
   focusedCell;
+  shadow;
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.append(TableTemplate.content.cloneNode(true));
+    this.shadow = this.attachShadow({ mode: "closed" });
+    this.shadow.append(TableTemplate.content.cloneNode(true));
   }
-  //init(thisCache: KvCacheType) {
   init(appContext) {
     kvCache = new KvCache(appContext);
-    this.table = this.shadowRoot.getElementById("table");
-    this.tableBody = this.shadowRoot.getElementById("table-body");
-    this.tablehead = this.shadowRoot.getElementById("table-head");
+    this.table = this.shadow.getElementById("table");
+    this.tableBody = this.shadow.getElementById("table-body");
+    this.tablehead = this.shadow.getElementById("table-head");
     signals.on("buildDataTableEV", "", (cache) => {
       this.buildDataTable();
     });
@@ -499,7 +499,7 @@ var TableContainer = class extends HTMLElement {
       }
     }
     for (let i = 0; i < kvCache.columns.length; i++) {
-      const el = this.shadowRoot.getElementById(`header${i + 1}`);
+      const el = this.shadow.getElementById(`header${i + 1}`);
       el.onclick = (_e) => {
         this.resetFocusedRow();
         this.buildDataTable();
@@ -510,7 +510,7 @@ var TableContainer = class extends HTMLElement {
   }
   /** build table row event handlers for editing */
   makeEditableRow(kvCache2) {
-    const rows = this.shadowRoot.querySelectorAll("tr");
+    const rows = this.shadow.querySelectorAll("tr");
     for (const row of Array.from(rows)) {
       if (row.className.startsWith("headerRow")) continue;
       row.onclick = (e) => {
@@ -640,18 +640,20 @@ var TableFooter = class extends HTMLElement {
   }
   addBtn;
   deleteBtn;
+  internals;
+  shadow;
   /** ctor */
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.append(FooterTemplate.content.cloneNode(true));
+    this.shadow = this.attachShadow({ mode: "closed" });
+    this.shadow.append(FooterTemplate.content.cloneNode(true));
   }
   /** 
    * Setup the `add` and `delete` button event handlers.
    * Setup all required signals
   */
   connectedCallback() {
-    this.addBtn = this.shadowRoot.getElementById("addbtn");
+    this.addBtn = this.shadow.getElementById("addbtn");
     this.addBtn.onclick = (_e) => {
       const newRow = Object.assign({}, kvCache.schema.sample);
       for (const property in newRow) {
@@ -664,7 +666,7 @@ var TableFooter = class extends HTMLElement {
       signals.fire("buildDataTableEV", "", kvCache);
       signals.fire("scrollToBottomEV", "", "");
     };
-    this.deleteBtn = this.shadowRoot.getElementById("deletebtn");
+    this.deleteBtn = this.shadow.getElementById("deletebtn");
     this.deleteBtn.onclick = (_e) => {
       kvCache.delete(kvCache.CTX.FocusedRowKey);
       signals.fire("buildDataTableEV", "", kvCache);
@@ -678,7 +680,7 @@ var TableFooter = class extends HTMLElement {
         this.deleteBtn.removeAttribute("hidden");
       }
     });
-    let fileLoad = this.shadowRoot.getElementById("fileload");
+    let fileLoad = this.shadow.getElementById("fileload");
     document.addEventListener("keydown", function(event) {
       if (event.ctrlKey && event.key === "b") {
         event.preventDefault();
@@ -755,16 +757,17 @@ var PinContainer = class extends HTMLElement {
   static register() {
     customElements.define("pin-container", this);
   }
+  shadow;
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.append(PinTemplate.content.cloneNode(true));
+    this.shadow = this.attachShadow({ mode: "open" });
+    this.shadow.append(PinTemplate.content.cloneNode(true));
   }
   init(kvCache2) {
-    const popupDialog = this.shadowRoot.getElementById("popupDialog");
-    const pinDialog = this.shadowRoot.getElementById("pinDialog");
-    const pinInput = this.shadowRoot.getElementById("pin");
-    const popupText = this.shadowRoot.getElementById("popup_text");
+    const popupDialog = this.shadow.getElementById("popupDialog");
+    const pinDialog = this.shadow.getElementById("pinDialog");
+    const pinInput = this.shadow.getElementById("pin");
+    const popupText = this.shadow.getElementById("popup_text");
     on(popupDialog, "click", (event) => {
       event.preventDefault();
       popupDialog.close();
