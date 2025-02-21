@@ -372,9 +372,14 @@ var TableComponent = class extends HTMLElement {
   shadow;
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "closed" });
-    const TableTemplate = document.getElementById("tableTemplate");
-    this.shadow.append(TableTemplate.content.cloneNode(true));
+    const supportsDeclarative = HTMLElement.prototype.hasOwnProperty("attachInternals");
+    const internals = supportsDeclarative ? this.attachInternals() : void 0;
+    this.shadow = internals?.shadowRoot;
+    if (!this.shadow) {
+      this.shadow = this.attachShadow({ mode: "closed" });
+      const TableTemplate = document.getElementById("tableTemplate");
+      this.shadow.append(TableTemplate.content.cloneNode(true));
+    }
   }
   init(appContext) {
     kvCache = new KvCache(appContext);
@@ -532,9 +537,14 @@ var FooterComponent = class extends HTMLElement {
   /** ctor */
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "closed" });
-    const FooterTemplate = document.getElementById("footerTemplate");
-    this.shadow.append(FooterTemplate.content.cloneNode(true));
+    const supportsDeclarative = HTMLElement.prototype.hasOwnProperty("attachInternals");
+    const internals = supportsDeclarative ? this.attachInternals() : void 0;
+    this.shadow = internals?.shadowRoot;
+    if (!this.shadow) {
+      this.shadow = this.attachShadow({ mode: "closed" });
+      const FooterTemplate = document.getElementById("footerTemplate");
+      this.shadow.append(FooterTemplate.content.cloneNode(true));
+    }
   }
   /** 
    * Setup the `add` and `delete` button event handlers.
@@ -607,9 +617,14 @@ var PinComponent = class extends HTMLElement {
   shadow;
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "closed" });
-    const PinTemplate = document.getElementById("pinTemplate");
-    this.shadow.append(PinTemplate.content.cloneNode(true));
+    const supportsDeclarative = HTMLElement.prototype.hasOwnProperty("attachInternals");
+    const internals = supportsDeclarative ? this.attachInternals() : void 0;
+    this.shadow = internals?.shadowRoot;
+    if (!this.shadow) {
+      this.shadow = this.attachShadow({ mode: "open" });
+      const PinTemplate = document.getElementById("pinTemplate");
+      this.shadow.append(PinTemplate.content.cloneNode(true));
+    }
   }
   init(kvCache2) {
     const popupDialog = this.shadow.getElementById("popupDialog");
