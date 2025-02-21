@@ -42,4 +42,4 @@ document.title = thisSchema.dbKey
  * Initialize our Custom DataTable UI
  * We pass it an appContext (for the data provider)
  */
-document.getElementById("table-container").init(appContext)
+document.getElementById("table-component").init(appContext)

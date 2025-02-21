@@ -355,81 +355,14 @@ var KvCache = class {
   }
 };
 
-// ../../Components/Table/tableTemplate.ts
-var TableTemplate = document.createElement("template");
-TableTemplate.innerHTML = `
-<table id="table">
-   <thead id="table-head"></thead>
-   <tbody id="table-body"></tbody>
-</table>
-
-<style>
-   :host {
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      height: 80%;
-      margin-bottom: 11%;
-      background-color: black;
-   }
-
-   table thead {
-      position: sticky;
-      inset-block-start: 0;
-   }
-
-   #table {
-      margin-left: 50px;
-   }
-
-   #table td,
-   #table th {
-      border: 1px solid #554e4e;
-      padding: 8px;
-   }
-
-   td {
-      white-space: pre
-   }
-
-   #table tr:nth-child(even) {
-      background-color: #222;
-   }
-
-   #table tr:hover {
-      background-color: #242;
-   }
-
-   .selected_row td {
-      background-color: #363;
-   }
-
-   #table th {
-      padding-top: 5px;
-      padding-bottom: 5px;
-      text-align: left;
-      background-color: #04AA6D;
-      color: white;
-      user-select: none;
-   }
-
-   .editable {
-      color: white;
-      font-weight: bold;
-      border: 1px solid LightGoldenrodYellow;
-   }
-
-</style>
-`;
-
-// ../../Components/Table/TableContainer.ts
+// ../../Components/TableComponent.ts
 var kvCache;
-var TableContainer = class extends HTMLElement {
+var TableComponent = class extends HTMLElement {
   static {
-    __name(this, "TableContainer");
+    __name(this, "TableComponent");
   }
   static register() {
-    customElements.define("table-container", this);
+    customElements.define("table-component", this);
   }
   table;
   tablehead;
@@ -440,6 +373,7 @@ var TableContainer = class extends HTMLElement {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "closed" });
+    const TableTemplate = document.getElementById("tableTemplate");
     this.shadow.append(TableTemplate.content.cloneNode(true));
   }
   init(appContext) {
@@ -455,8 +389,8 @@ var TableContainer = class extends HTMLElement {
       lastRow.scrollIntoView({ behavior: "smooth" });
     });
     this.buildTableHead();
-    const pinContainer = document.getElementById("pin-container");
-    pinContainer.init(kvCache);
+    const pinComponent = document.getElementById("pin-component");
+    pinComponent.init(kvCache);
   }
   /** Build the Table header */
   buildTableHead() {
@@ -582,70 +516,24 @@ var TableContainer = class extends HTMLElement {
     this.focusedRow = null;
   }
 };
-TableContainer.register();
+TableComponent.register();
 
-// ../../Components/Footer/footTemplate.ts
-var FooterTemplate = document.createElement("template");
-FooterTemplate.innerHTML = `
-<footer class="footer">
-   <button id='deletebtn' hidden>Delete</button>
-   <button id='addbtn'>Add New</button>
-   <input id="fileload" type="file" name="fileload">
-</footer>
-
-<style>
-
-   footer {
-      position: fixed;
-      height: 10%;
-      width: 100%;
-      padding-top: 2px;
-      bottom: 0;
-      left: 0;
-      clear: both;
-      background-color: black;
-      color: white;
-      overflow: auto;
-   }
-
-   button {
-      background-color: #04AA6D;
-      border: none;
-      color: white;
-      padding: 10px;
-      text-align: center;
-      margin-right: 10px;
-      margin-top: 10px;
-      width: 110px;
-      cursor: pointer;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 16px;
-   }
-
-   input[type="file"] {
-      display: none;
-   }
-
-</style>
-`;
-
-// ../../Components/Footer/FootContainer.ts
-var TableFooter = class extends HTMLElement {
+// ../../Components/FootComponent.ts
+var FooterComponent = class extends HTMLElement {
   static {
-    __name(this, "TableFooter");
+    __name(this, "FooterComponent");
   }
   static register() {
-    customElements.define("table-footer", this);
+    customElements.define("footer-component", this);
   }
   addBtn;
   deleteBtn;
-  internals;
   shadow;
   /** ctor */
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "closed" });
+    const FooterTemplate = document.getElementById("footerTemplate");
     this.shadow.append(FooterTemplate.content.cloneNode(true));
   }
   /** 
@@ -706,61 +594,21 @@ var TableFooter = class extends HTMLElement {
     });
   }
 };
-TableFooter.register();
+FooterComponent.register();
 
-// ../../Components/Pin/pinTemplate.ts
-var PinTemplate = document.createElement("template");
-PinTemplate.innerHTML = `
-<dialog id="popupDialog">
-   <p id="popup_text">Yup!</p>
-   <p>Press any key to continue.</p>
-</dialog>
-
-<dialog id="pinDialog">
-   <label for="pin">Enter PIN</label>
-   <input id="pin" type="password" />
-</dialog>
-
-<style>
-   dialog {
-      border-radius: 1rem;
-      border-width: 2px;
-      border-color: red;
-      background-color: black;
-   }
-
-   dialog::backdrop {
-      background-color: BLACK;
-   }
-
-   input {
-      font-size: 1rem;
-      border-radius: 10px;
-      padding: 12px 20px;
-      margin: 8px 0;
-      box-sizing: border-box;
-   }
-
-   label {
-      font-size: 1rem;
-      margin-right: 10px;
-      color: white;
-   }
-</style>
-`;
-
-// ../../Components/Pin/PinContainer.ts
-var PinContainer = class extends HTMLElement {
+// ../../Components/PinComponent.ts
+var PinComponent = class extends HTMLElement {
   static {
-    __name(this, "PinContainer");
+    __name(this, "PinComponent");
   }
   static register() {
-    customElements.define("pin-container", this);
+    customElements.define("pin-component", this);
   }
   shadow;
   constructor() {
     super();
-    this.shadow = this.attachShadow({ mode: "open" });
+    this.shadow = this.attachShadow({ mode: "closed" });
+    const PinTemplate = document.getElementById("pinTemplate");
     this.shadow.append(PinTemplate.content.cloneNode(true));
   }
   init(kvCache2) {
@@ -823,14 +671,14 @@ var PinContainer = class extends HTMLElement {
     }
   }
 };
-PinContainer.register();
+PinComponent.register();
 export {
   $,
+  FooterComponent,
   KvCache,
   KvClient,
-  PinContainer,
-  TableContainer,
-  TableFooter,
+  PinComponent,
+  TableComponent,
   encryptText,
   kvCache,
   newEventBus,
