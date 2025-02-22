@@ -10,7 +10,7 @@
 const thisSchema = {
    dbKey: "PWA",
    keyColumnName:"host",
-   sample: {
+   sampleRecord: {
       host: "Z",
       login: "",
       pw: "",
@@ -18,7 +18,7 @@ const thisSchema = {
    }
 }
 
-const LOCAL = false
+const LOCAL = true
 
 /** 
  *  Our shared app context -> dependency injected below
@@ -31,7 +31,7 @@ const appContext = {
    RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
    PIN: '',
-   FocusedRowKey: "",
+   FocusedKey: "",
    dbOptions: { schema: thisSchema }
 }
 

@@ -11,7 +11,7 @@
 
 ## Run live at https://nhrones.github.io/DT-PWA/
 
-
-NOTE: The three files `index.html`, `bundle.js`, and `styles.css`, all come from `/Apps/Base/`.    
-These are common shared assets, and the build/bundle process only happens there.    
+NOTE: The two files `index.html` and `bundle.js` come from `/Apps/Base/`.    
+These are common shared assets, and the build/bundle process only happens there. 
+There are no other dependencies here!   
 Only the `main.js` file is unique in this app folder.

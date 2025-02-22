@@ -2,62 +2,6 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../../Common/signals.ts
-function newEventBus() {
-  const eventSubscriptions = /* @__PURE__ */ new Map();
-  const newEventBus2 = {
-    /**
-     * on - registers a handler function to be executed when an event is fired
-     * @param {key} eventName - event name (one of `TypedEvents` only)!
-     * @param {string} id - id of a target element (may be an empty string)
-     * @param {Handler} handler - event handler callback function
-     */
-    on(eventName, id, handler) {
-      const keyName = eventName + "-" + id;
-      if (eventSubscriptions.has(keyName)) {
-        const handlers = eventSubscriptions.get(keyName);
-        handlers.push(handler);
-      } else {
-        eventSubscriptions.set(keyName, [handler]);
-      }
-    },
-    /** 
-     * fire - publish an event
-     * executes all registered handlers for a named event
-     * @param {key} eventName - event name - one of `TypedEvents` only!
-     * @param {string} id - id of a target element (may be an empty string)
-     * @param {TypedEvents[key]} data - data payload, typed for this category of event
-     */
-    fire(eventName, id, data) {
-      const keyName = eventName + "-" + id;
-      const handlers = eventSubscriptions.get(keyName);
-      if (handlers) {
-        for (const handler of handlers) {
-          handler(data);
-        }
-      }
-    }
-  };
-  return newEventBus2;
-}
-__name(newEventBus, "newEventBus");
-var signals = newEventBus();
-
-// ../../Common/utils.ts
-var $ = /* @__PURE__ */ __name((id) => document.getElementById(id), "$");
-var on = /* @__PURE__ */ __name((elem, event, listener) => {
-  return elem.addEventListener(event, listener);
-}, "on");
-function encryptText(text) {
-  let result = "";
-  const key = "ndhg";
-  for (let i = 0; i < text.length; i++) {
-    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-  }
-  return result;
-}
-__name(encryptText, "encryptText");
-
 // ../../Data/DataProvider/kvClient.ts
 var KvClient = class {
   static {
@@ -122,36 +66,38 @@ var KvClient = class {
    * @param {{ rowID: any; type: any; }} result
    */
   handleMutation(result) {
+    console.info(`Mutation event:`, result);
   }
   /** set Kv Pin */
   async setKvPin(rawpin) {
-    const pin = encryptText(rawpin);
+    const pin = this.kvCache.encryptText(rawpin);
     await this.callProcedure(this.ServiceURL, "SET", { key: ["PIN"], value: pin }).then((_result) => {
       if (this.DEV) console.log(`Set PIN ${rawpin} to: `, pin);
     });
   }
   addNewRecord() {
-    const newRow = Object.assign({}, this.kvCache.schema.sample);
+    const newRow = Object.assign({}, this.kvCache.schema.sampleRecord);
     for (const property in newRow) {
       if (typeof newRow[property] === "object") {
         newRow[property] = newRow[property][0];
       }
     }
-    const keyColName = this.kvCache.CTX.dbOptions.schema.keyColumnName;
+    const keyColName = this.kvCache.schema.keyColumnName;
     this.kvCache.set(newRow[keyColName], newRow);
   }
   /** fetch a querySet */
   async fetchQuerySet() {
+    const cache = this.kvCache;
     await this.callProcedure(
       this.ServiceURL,
       "GET",
-      { key: [this.CTX.dbOptions.schema.dbKey] }
+      { key: [this.kvCache.schema.dbKey] }
     ).then((result) => {
       if (result.value) {
-        this.kvCache.restoreCache(encryptText(result.value));
+        cache.restoreCache(cache.encryptText(result.value));
       } else {
         this.addNewRecord();
-        signals.fire("buildDataTableEV", "", this.kvCache);
+        this.kvCache.UiHost.buildDataTable(cache);
       }
     });
   }
@@ -169,7 +115,7 @@ var KvClient = class {
         this.ServiceURL,
         "SET",
         {
-          key: [this.CTX.dbOptions.schema.dbKey],
+          key: [this.kvCache.schema.dbKey],
           value
         }
       ).then((result) => {
@@ -230,6 +176,7 @@ var KvCache = class {
   static {
     __name(this, "KvCache");
   }
+  UiHost;
   dbKey = "";
   schema;
   nextMsgID = 0;
@@ -242,30 +189,35 @@ var KvCache = class {
   CTX;
   DEV;
   /** ctor */
-  constructor(ctx) {
-    this.dbKey = `${ctx.dbOptions.schema.dbKey}`;
-    this.schema = ctx.dbOptions.schema;
+  constructor(schema, ctx, uiHost) {
+    this.UiHost = uiHost;
+    this.dbKey = `${schema.dbKey}`;
+    this.schema = schema;
     this.CTX = ctx;
-    this.DEV = this.CTX.DEV;
+    this.DEV = ctx.DEV;
     this.callbacks = /* @__PURE__ */ new Map();
     this.dbMap = /* @__PURE__ */ new Map();
-    this.columns = this.buildColumnSchema(this.schema.sample);
+    this.columns = this.buildColumnSchema(this.schema.sampleRecord);
     this.kvClient = new KvClient(this, ctx);
     this.kvClient.init();
-    signals.on("restoreCacheEV", "", (result) => {
-      this.restoreCache(result);
-    });
   }
-  /** 
-   * restores our cache from a json string 
-   */
+  /** xor encryption */
+  encryptText(text) {
+    let result = "";
+    const key = "ndhg";
+    for (let i = 0; i < text.length; i++) {
+      result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return result;
+  }
+  /** restore our cache from a json string */
   restoreCache(records) {
     const pwaObj = JSON.parse(records);
     this.dbMap = new Map(pwaObj);
     this.persist();
     const result = this.hydrate();
     if (result == "ok") {
-      signals.fire("buildDataTableEV", "", this);
+      this.UiHost.buildDataTable(this);
     }
   }
   /**
@@ -296,14 +248,14 @@ var KvCache = class {
       this.dbMap = new Map([...this.dbMap.entries()].sort());
     }
     const mapString = JSON.stringify(Array.from(this.dbMap.entries()));
-    const encrypted = encryptText(mapString);
+    const encrypted = this.encryptText(mapString);
     this.kvClient.set(encrypted);
   }
   /** hydrate a dataset from a single raw record stored in kvDB */
   hydrate() {
     this.raw = [...this.dbMap.values()];
     this.querySet = [...this.raw];
-    signals.fire("buildDataTableEV", "", this);
+    this.UiHost.buildDataTable(this);
     return this.raw.length > 2 ? "ok" : "Not found";
   }
   /** resest the working querySet to original DB values */
@@ -364,6 +316,7 @@ var TableComponent = class extends HTMLElement {
   static register() {
     customElements.define("table-component", this);
   }
+  footer;
   table;
   tablehead;
   tableBody;
@@ -381,21 +334,20 @@ var TableComponent = class extends HTMLElement {
       this.shadow.append(TableTemplate.content.cloneNode(true));
     }
   }
-  init(appContext) {
-    kvCache = new KvCache(appContext);
+  init(schema, appContext) {
+    kvCache = new KvCache(schema, appContext, this);
     this.table = this.shadow.getElementById("table");
     this.tableBody = this.shadow.getElementById("table-body");
     this.tablehead = this.shadow.getElementById("table-head");
-    signals.on("buildDataTableEV", "", (cache) => {
-      this.buildDataTable();
-    });
-    signals.on("scrollToBottomEV", "", () => {
-      const lastRow = this.tableBody.rows[this.tableBody.rows.length - 1];
-      lastRow.scrollIntoView({ behavior: "smooth" });
-    });
+    this.footer = document.getElementById("footer-component");
     this.buildTableHead();
     const pinComponent = document.getElementById("pin-component");
     pinComponent.init(kvCache);
+  }
+  /** scrollToBottom */
+  scrollToBottom() {
+    const lastRow = this.tableBody.rows[this.tableBody.rows.length - 1];
+    lastRow.scrollIntoView({ behavior: "smooth" });
   }
   /** Build the Table header */
   buildTableHead() {
@@ -462,8 +414,8 @@ var TableComponent = class extends HTMLElement {
         this.focusedRow?.classList.remove("selected_row");
         this.focusedRow = row;
         this.focusedRow.classList.add("selected_row");
-        kvCache2.CTX.FocusedRowKey = this.focusedRow.dataset.cache_key;
-        signals.fire("resetButtons", "", false);
+        kvCache2.CTX.FocusedKey = this.focusedRow.dataset.cache_key;
+        this.footer.resetButtons(false);
         this.focusedCell = target;
         this.focusedCell.setAttribute("contenteditable", "");
         this.focusedCell.className = "editable ";
@@ -517,7 +469,7 @@ var TableComponent = class extends HTMLElement {
   }
   /** reset any existing focused row */
   resetFocusedRow() {
-    signals.fire("resetButtons", "", true);
+    this.footer.resetButtons(true);
     this.focusedRow = null;
   }
 };
@@ -534,6 +486,7 @@ var FooterComponent = class extends HTMLElement {
   addBtn;
   deleteBtn;
   shadow;
+  table;
   /** ctor */
   constructor() {
     super();
@@ -548,36 +501,27 @@ var FooterComponent = class extends HTMLElement {
   }
   /** 
    * Setup the `add` and `delete` button event handlers.
-   * Setup all required signals
   */
   connectedCallback() {
+    this.table = document.getElementById("table-component");
     this.addBtn = this.shadow.getElementById("addbtn");
     this.addBtn.onclick = (_e) => {
-      const newRow = Object.assign({}, kvCache.schema.sample);
+      const newRow = Object.assign({}, kvCache.schema.sampleRecord);
       for (const property in newRow) {
         if (typeof newRow[property] === "object") {
           newRow[property] = newRow[property][0];
         }
       }
-      const keyColName = kvCache.CTX.dbOptions.schema.keyColumnName;
+      const keyColName = kvCache.schema.keyColumnName;
       kvCache.set(newRow[keyColName], newRow);
-      signals.fire("buildDataTableEV", "", kvCache);
-      signals.fire("scrollToBottomEV", "", "");
+      this.table.buildDataTable();
+      this.table.scrollToBottom();
     };
     this.deleteBtn = this.shadow.getElementById("deletebtn");
     this.deleteBtn.onclick = (_e) => {
-      kvCache.delete(kvCache.CTX.FocusedRowKey);
-      signals.fire("buildDataTableEV", "", kvCache);
+      kvCache.delete(kvCache.CTX.FocusedKey);
+      this.table.buildDataTable();
     };
-    signals.on("resetButtons", "", (reset) => {
-      if (reset) {
-        this.deleteBtn.setAttribute("hidden", "");
-        this.addBtn.removeAttribute("hidden");
-      } else {
-        this.addBtn.setAttribute("hidden", "");
-        this.deleteBtn.removeAttribute("hidden");
-      }
-    });
     let fileLoad = this.shadow.getElementById("fileload");
     document.addEventListener("keydown", function(event) {
       if (event.ctrlKey && event.key === "b") {
@@ -596,17 +540,30 @@ var FooterComponent = class extends HTMLElement {
         fileLoad.addEventListener("change", function() {
           const reader = new FileReader();
           reader.onload = function() {
-            signals.fire("restoreCacheEV", "", reader.result);
+            kvCache.restoreCache(reader.result);
           };
           reader.readAsText(fileLoad.files[0]);
         });
       }
     });
   }
+  /** reset footer buttons */
+  resetButtons(reset) {
+    if (reset) {
+      this.deleteBtn.setAttribute("hidden", "");
+      this.addBtn.removeAttribute("hidden");
+    } else {
+      this.addBtn.setAttribute("hidden", "");
+      this.deleteBtn.removeAttribute("hidden");
+    }
+  }
 };
 FooterComponent.register();
 
 // ../../Components/PinComponent.ts
+var on = /* @__PURE__ */ __name((elem, event, listener) => {
+  return elem.addEventListener(event, listener);
+}, "on");
 var PinComponent = class extends HTMLElement {
   static {
     __name(this, "PinComponent");
@@ -655,7 +612,7 @@ var PinComponent = class extends HTMLElement {
       event.preventDefault();
       const pinIn = pinInput;
       const pinDia = pinDialog;
-      const ecriptedPin = encryptText(pinIn.value);
+      const ecriptedPin = kvCache2.encryptText(pinIn.value);
       if (event.key === "Enter" || ecriptedPin === kvCache2.CTX.PIN) {
         pinTryCount += 1;
         if (ecriptedPin === kvCache2.CTX.PIN) {
@@ -688,15 +645,11 @@ var PinComponent = class extends HTMLElement {
 };
 PinComponent.register();
 export {
-  $,
   FooterComponent,
   KvCache,
   KvClient,
   PinComponent,
   TableComponent,
-  encryptText,
   kvCache,
-  newEventBus,
-  on,
-  signals
+  on
 };
