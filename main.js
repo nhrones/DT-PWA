@@ -18,6 +18,9 @@ const thisSchema = {
    }
 }
 
+// set the title to the dbKey value
+document.title = thisSchema.dbKey
+
 const LOCAL = false
 
 /** 
@@ -40,6 +43,7 @@ document.title = thisSchema.dbKey
 
 /**
  * Initialize our Custom DataTable UI
- * We pass it an appContext (for the data provider)
+ * We pass in a dbSchema and an appContext
+ * See: Components/TableComponent.init()
  */
-document.getElementById("table-component").init(appContext)
+document.getElementById("table-component").init(thisSchema, appContext)

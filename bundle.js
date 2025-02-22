@@ -190,11 +190,12 @@ var KvCache = class {
   DEV;
   /** ctor */
   constructor(schema, ctx, uiHost) {
+    console.info("cache.ctor ctx:", ctx);
     this.UiHost = uiHost;
     this.dbKey = `${schema.dbKey}`;
     this.schema = schema;
     this.CTX = ctx;
-    this.DEV = ctx.DEV;
+    this.DEV = this.CTX.DEV;
     this.callbacks = /* @__PURE__ */ new Map();
     this.dbMap = /* @__PURE__ */ new Map();
     this.columns = this.buildColumnSchema(this.schema.sampleRecord);
