@@ -307,104 +307,117 @@ var KvCache = class {
   }
 };
 
-// ../../Components/RowElement.ts
-function buildRows(tableElement, kvCache2) {
-  const querySet = kvCache2.querySet;
-  if (querySet) {
-    for (let i = 0; i < querySet.length; i++) {
-      const obj = querySet[i];
-      let row = `<tr data-cache_key="${obj[kvCache2.columns[0].name]}">`;
-      for (let i2 = 0; i2 < kvCache2.columns.length; i2++) {
-        if (kvCache2.columns[i2].type === "boolean") {
-          if (obj[kvCache2.columns[i2].name] === "true") {
-            row += `<td data-column_index=${i2} 
-               data-column_id="${kvCache2.columns[i2].name}"><input type="checkbox" checked></td>`;
-          } else {
-            row += `<td data-column_index=${i2} 
-               data-column_id="${kvCache2.columns[i2].name}"><input type="checkbox"></td>`;
+// ../../Components/RowComponent.ts
+var focusedCell;
+var focusedRow;
+var setFocusedRow = /* @__PURE__ */ __name((val) => {
+  focusedRow = val;
+}, "setFocusedRow");
+var TableRows = class {
+  static {
+    __name(this, "TableRows");
+  }
+  constructor() {
+  }
+  /** build an HTML table */
+  buildRows(tableElement) {
+    const querySet = kvCache.querySet;
+    if (querySet) {
+      for (let i = 0; i < querySet.length; i++) {
+        const obj = querySet[i];
+        let row = `<tr data-cache_key="${obj[kvCache.columns[0].name]}">`;
+        for (let i2 = 0; i2 < kvCache.columns.length; i2++) {
+          const colName = kvCache.columns[i2].name;
+          switch (kvCache.columns[i2].type) {
+            case "boolean":
+              let checked = obj[colName] === "true" ? "checked" : "";
+              row += `<td data-column_index=${i2} 
+                  data-column_id="${colName}"><input type="checkbox" ${checked}></td>`;
+              break;
+            case "object":
+              row += `<td data-column_index=${i2} 
+                  data-column_id="${colName}">${this.buildSelect(
+                kvCache.columns[i2].defaultValue,
+                obj[colName]
+              )}</td>`;
+              break;
+            default:
+              row += `<td data-column_index=${i2} 
+                  data-column_id="${colName}">${obj[colName]}</td>`;
+              break;
           }
-        } else if (kvCache2.columns[i2].type === "object") {
-          row += `<td data-column_index=${i2} 
-               data-column_id="${kvCache2.columns[i2].name}">${buildSelect(kvCache2.columns[i2].defaultValue, obj[kvCache2.columns[i2].name])}</td>`;
-        } else {
-          row += `<td data-column_index=${i2} 
-               data-column_id="${kvCache2.columns[i2].name}">${obj[kvCache2.columns[i2].name]}</td>`;
         }
+        row += "</tr>";
+        tableElement.tableBody.innerHTML += row;
       }
-      row += "</tr>";
-      tableElement.tableBody.innerHTML += row;
     }
   }
-}
-__name(buildRows, "buildRows");
-function makeEditableRow(tableElement, kvCache2) {
-  const rows = tableElement.shadow.querySelectorAll("tr");
-  for (const row of Array.from(rows)) {
-    if (row.className.startsWith("headerRow")) continue;
-    row.onclick = (e) => {
-      const { target } = e;
-      if (tableElement.focusedRow && tableElement.focusedCell && target !== tableElement.focusedCell) {
-        tableElement.focusedCell.removeAttribute("contenteditable");
-        tableElement.focusedCell.className = "";
-        tableElement.focusedCell.oninput = null;
-      }
-      tableElement.focusedRow?.classList.remove("selected_row");
-      tableElement.focusedRow = row;
-      tableElement.focusedRow.classList.add("selected_row");
-      kvCache2.CTX.FocusedKey = tableElement.focusedRow.dataset.cache_key;
-      tableElement.footer.resetButtons(false);
-      tableElement.focusedCell = target;
-      tableElement.focusedCell.setAttribute("contenteditable", "");
-      tableElement.focusedCell.className = "editable ";
-      let key = tableElement.focusedRow.dataset.cache_key;
-      let columnID = tableElement.focusedCell.dataset.column_id;
-      let columnIndex = parseInt(tableElement.focusedCell.dataset.column_index) || 0;
-      let rowObj = kvCache2.get(key);
-      tableElement.focusedCell.onblur = () => {
-        let thisValue = tableElement.focusedCell.textContent;
-        if (tableElement.focusedCell.tagName === "SELECT") {
-          columnID = tableElement.focusedCell.parentElement.dataset.column_id;
-          columnIndex = parseInt(tableElement.focusedCell.parentElement.dataset.column_index) || 0;
-          const theCell = tableElement.focusedCell;
-          let text = theCell.options[theCell.selectedIndex].text;
-          thisValue = text;
-        }
-        const currentValue = rowObj[columnID];
-        if (currentValue !== thisValue) {
-          rowObj[columnID] = thisValue;
-          if (columnIndex === 0) {
-            const newKey = thisValue;
-            if (key !== newKey) {
-              kvCache2.delete(key);
-              key = thisValue;
-              kvCache2.set(key, rowObj);
-            }
-          } else {
-            kvCache2.set(key, rowObj);
-          }
-        }
-      };
-    };
-  }
-  tableElement.focusedCell?.focus();
-}
-__name(makeEditableRow, "makeEditableRow");
-function buildSelect(options, selected) {
-  let frag = `<select>
+  /** Build select element */
+  buildSelect(options, selected) {
+    let frag = `<select>
    `;
-  options.forEach((option) => {
-    if (selected === option) {
-      frag += `<option value="${option}" selected>${option}</option>
+    options.forEach((option) => {
+      if (selected === option) {
+        frag += `<option value="${option}" selected>${option}</option>
          `;
-    } else {
-      frag += `<option value="${option}">${option}</option>
+      } else {
+        frag += `<option value="${option}">${option}</option>
       `;
+      }
+    });
+    frag += "</select>";
+    return frag;
+  }
+  /** build table row event handlers for editing */
+  makeEditableRow(tableComponent) {
+    const rows = tableComponent.shadow.querySelectorAll("tr");
+    for (const row of Array.from(rows)) {
+      if (row.className.startsWith("headerRow")) continue;
+      row.onclick = (e) => {
+        if (focusedRow && focusedCell && e.target !== focusedCell) {
+          focusedCell.removeAttribute("contenteditable");
+          focusedCell.className = "";
+          focusedCell.oninput = null;
+        }
+        focusedRow?.classList.remove("selected_row");
+        focusedRow = row;
+        focusedRow.classList.add("selected_row");
+        kvCache.CTX.FocusedKey = focusedRow.dataset.cache_key;
+        tableComponent.footer.resetButtons(false);
+        focusedCell = e.target;
+        focusedCell.setAttribute("contenteditable", "");
+        focusedCell.className = "editable ";
+        let key = focusedRow.dataset.cache_key;
+        let columnID = focusedCell.dataset.column_id;
+        let columnIndex = parseInt(focusedCell.dataset.column_index) || 0;
+        let rowObj = kvCache.get(key);
+        focusedCell.onblur = () => {
+          let thisValue = focusedCell.textContent;
+          if (focusedCell.tagName === "SELECT") {
+            columnID = focusedCell.parentElement.dataset.column_id;
+            columnIndex = parseInt(focusedCell.parentElement.dataset.column_index) || 0;
+            const theCell = focusedCell;
+            let text = theCell.options[theCell.selectedIndex].text;
+            thisValue = text;
+          }
+          if (rowObj[columnID] !== thisValue) {
+            rowObj[columnID] = thisValue;
+            if (columnIndex === 0) {
+              if (key !== thisValue) {
+                kvCache.delete(key);
+                key = thisValue;
+                kvCache.set(key, rowObj);
+              }
+            } else {
+              kvCache.set(key, rowObj);
+            }
+          }
+        };
+      };
     }
-  });
-  frag += "</select>";
-  return frag;
-}
-__name(buildSelect, "buildSelect");
+    focusedCell?.focus();
+  }
+};
 
 // ../../Components/TableComponent.ts
 var kvCache;
@@ -419,8 +432,7 @@ var TableComponent = class extends HTMLElement {
   table;
   tablehead;
   tableBody;
-  focusedRow;
-  focusedCell;
+  tableRows;
   shadow;
   constructor() {
     super();
@@ -436,6 +448,7 @@ var TableComponent = class extends HTMLElement {
   /** Initialize this component */
   init(schema, appContext) {
     kvCache = new KvCache(schema, appContext, this);
+    this.tableRows = new TableRows();
     this.table = this.shadow.getElementById("table");
     this.tableBody = this.shadow.getElementById("table-body");
     this.tablehead = this.shadow.getElementById("table-head");
@@ -457,8 +470,7 @@ var TableComponent = class extends HTMLElement {
       th += `   <th id="header${i + 1}" data-index=${i} value=1>${kvCache.columns[i].name}</th>`;
     }
     ;
-    this.tablehead.innerHTML += tr + th;
-    this.tablehead.innerHTML += `</tr>`;
+    this.tablehead.innerHTML += tr + th + `</tr>`;
     for (let i = 0; i < kvCache.columns.length; i++) {
       const el = this.shadow.getElementById(`header${i + 1}`);
       el.onclick = (_e) => {
@@ -470,14 +482,14 @@ var TableComponent = class extends HTMLElement {
   /** build an HTML table */
   buildDataTable() {
     this.tableBody.innerHTML = "";
-    if (kvCache.querySet) buildRows(this, kvCache);
+    if (kvCache.querySet) this.tableRows.buildRows(this);
     this.resetFocusedRow();
-    makeEditableRow(this, kvCache);
+    this.tableRows.makeEditableRow(this);
   }
   /** reset any existing focused row */
   resetFocusedRow() {
     this.footer.resetButtons(true);
-    this.focusedRow = null;
+    setFocusedRow(null);
   }
 };
 TableComponent.register();
