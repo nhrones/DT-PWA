@@ -2,10 +2,15 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../../Data/DataProvider/kvClient.ts
+// ../../Data/DataProvider/mod.js
+var __defProp2 = Object.defineProperty;
+var __name2 = /* @__PURE__ */ __name((target, value) => __defProp2(target, "name", { value, configurable: true }), "__name");
 var KvClient = class {
   static {
     __name(this, "KvClient");
+  }
+  static {
+    __name2(this, "KvClient");
   }
   DEV = false;
   nextMsgID = 0;
@@ -170,11 +175,12 @@ var KvClient = class {
     });
   }
 };
-
-// ../../Data/DataProvider/kvCache.ts
 var KvCache = class {
   static {
     __name(this, "KvCache");
+  }
+  static {
+    __name2(this, "KvCache");
   }
   UiHost;
   dbKey = "";
@@ -307,13 +313,325 @@ var KvCache = class {
   }
 };
 
-// ../../Components/TableComponent.ts
+// ../../Components/mod.js
+var __defProp3 = Object.defineProperty;
+var __name3 = /* @__PURE__ */ __name((target, value) => __defProp3(target, "name", { value, configurable: true }), "__name");
+var KvClient2 = class {
+  static {
+    __name(this, "KvClient");
+  }
+  static {
+    __name3(this, "KvClient");
+  }
+  DEV = false;
+  nextMsgID = 0;
+  querySet = [];
+  transactions = /* @__PURE__ */ new Map();
+  currentPage = 1;
+  focusedRow = null;
+  kvCache;
+  CTX;
+  ServiceURL;
+  RegistrationURL;
+  /** ctor */
+  constructor(cache, ctx) {
+    this.CTX = ctx;
+    this.DEV = ctx.DEV;
+    this.ServiceURL = ctx.LOCAL_DB ? ctx.LocalDbURL : ctx.RemoteDbURL;
+    this.RegistrationURL = this.ServiceURL + ctx.RpcURL;
+    this.kvCache = cache;
+    this.transactions = /* @__PURE__ */ new Map();
+  }
+  /** initialize our EventSource and fetch some data */
+  init() {
+    const eventSource = new EventSource(this.RegistrationURL);
+    console.log("CONNECTING");
+    eventSource.addEventListener("open", () => {
+      this.callProcedure(this.ServiceURL, "GET", { key: ["PIN"] }).then((result) => {
+        this.CTX.PIN = result.value;
+        this.fetchQuerySet();
+      });
+    });
+    eventSource.addEventListener("error", (_e) => {
+      switch (eventSource.readyState) {
+        case EventSource.OPEN:
+          console.log("CONNECTED");
+          break;
+        case EventSource.CONNECTING:
+          console.log("CONNECTING");
+          break;
+        case EventSource.CLOSED:
+          console.log("DISCONNECTED");
+          break;
+      }
+    });
+    eventSource.addEventListener("message", (evt) => {
+      const parsed = JSON.parse(evt.data);
+      const { txID, error, result } = parsed;
+      if (txID === -1) {
+        this.handleMutation(result);
+      }
+      if (!this.transactions.has(txID)) return;
+      const transaction = this.transactions.get(txID);
+      this.transactions.delete(txID);
+      if (transaction) transaction(error, result);
+    });
+  }
+  /**
+   * handle Mutation Event
+   * @param {{ rowID: any; type: any; }} result
+   */
+  handleMutation(result) {
+    console.info(`Mutation event:`, result);
+  }
+  /** set Kv Pin */
+  async setKvPin(rawpin) {
+    const pin = this.kvCache.encryptText(rawpin);
+    await this.callProcedure(this.ServiceURL, "SET", { key: ["PIN"], value: pin }).then((_result) => {
+      if (this.DEV) console.log(`Set PIN ${rawpin} to: `, pin);
+    });
+  }
+  addNewRecord() {
+    const newRow = Object.assign({}, this.kvCache.schema.sampleRecord);
+    for (const property in newRow) {
+      if (typeof newRow[property] === "object") {
+        newRow[property] = newRow[property][0];
+      }
+    }
+    const keyColName = this.kvCache.schema.keyColumnName;
+    this.kvCache.set(newRow[keyColName], newRow);
+  }
+  /** fetch a querySet */
+  async fetchQuerySet() {
+    const cache = this.kvCache;
+    await this.callProcedure(
+      this.ServiceURL,
+      "GET",
+      { key: [this.kvCache.schema.dbKey] }
+    ).then((result) => {
+      if (result.value) {
+        cache.restoreCache(cache.encryptText(result.value));
+      } else {
+        this.addNewRecord();
+        this.kvCache.UiHost.buildDataTable(cache);
+      }
+    });
+  }
+  /** get row from key */
+  get(key) {
+    for (let index = 0; index < this.querySet.length; index++) {
+      const element = this.querySet[index];
+      if (element.id === key) return element;
+    }
+  }
+  /** The `set` method mutates - will call the `persist` method. */
+  set(value) {
+    try {
+      this.callProcedure(
+        this.ServiceURL,
+        "SET",
+        {
+          key: [this.kvCache.schema.dbKey],
+          value
+        }
+      ).then((result) => {
+        this.querySet = result.querySet;
+        return this.querySet;
+      });
+    } catch (e) {
+      return { Error: e };
+    }
+  }
+  /** get row from key */
+  delete(key) {
+    try {
+      this.callProcedure(
+        this.ServiceURL,
+        "DELETE",
+        {
+          key,
+          value: ""
+        }
+      ).then((result) => {
+        console.info("Delete result: ", result);
+      });
+    } catch (e) {
+      return { Error: e };
+    }
+  }
+  /** 
+   * Make an Asynchronous Remote Proceedure Call
+   *  
+   * @param {any} procedure - the name of the remote procedure to be called
+   * @param {any} params - appropriately typed parameters for this procedure
+   * 
+   * @returns {Promise<any>} - Promise object has a transaction that is stored by ID    
+   *   in a transactions Set.   
+   *   When this promise resolves or rejects, the transaction is retrieves by ID    
+   *   and executed by the promise. 
+   */
+  callProcedure(dbServiceURL, procedure, params) {
+    const txID = this.nextMsgID++;
+    return new Promise((resolve, reject) => {
+      this.transactions.set(txID, (error, result) => {
+        if (error)
+          return reject(new Error(error));
+        resolve(result);
+      });
+      fetch(dbServiceURL, {
+        method: "POST",
+        mode: "cors",
+        body: JSON.stringify({ txID, procedure, params })
+      });
+    });
+  }
+};
+var KvCache2 = class {
+  static {
+    __name(this, "KvCache");
+  }
+  static {
+    __name3(this, "KvCache");
+  }
+  UiHost;
+  dbKey = "";
+  schema;
+  nextMsgID = 0;
+  querySet = [];
+  callbacks;
+  columns = [];
+  kvClient;
+  dbMap;
+  raw = [];
+  CTX;
+  DEV;
+  /** ctor */
+  constructor(schema, ctx, uiHost) {
+    this.UiHost = uiHost;
+    this.dbKey = `${schema.dbKey}`;
+    this.schema = schema;
+    this.CTX = ctx;
+    this.DEV = this.CTX.DEV;
+    this.callbacks = /* @__PURE__ */ new Map();
+    this.dbMap = /* @__PURE__ */ new Map();
+    this.columns = this.buildColumnSchema(this.schema.sampleRecord);
+    this.kvClient = new KvClient2(this, ctx);
+    this.kvClient.init();
+  }
+  /** xor encryption */
+  encryptText(text) {
+    let result = "";
+    const key = "ndhg";
+    for (let i = 0; i < text.length; i++) {
+      result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return result;
+  }
+  /** restore our cache from a json string */
+  restoreCache(records) {
+    const pwaObj = JSON.parse(records);
+    this.dbMap = new Map(pwaObj);
+    this.persist();
+    const result = this.hydrate();
+    if (result == "ok") {
+      this.UiHost.buildDataTable(this);
+    }
+  }
+  /**
+   * extract a set of column-schema from the DB.schema object
+   */
+  buildColumnSchema(obj) {
+    const columns = [];
+    for (const [key, value] of Object.entries(obj)) {
+      let read_only = false;
+      if (typeof value === "number" && value === -1 || typeof value === "string" && value === "READONLY") {
+        read_only = true;
+      }
+      columns.push({
+        name: key,
+        type: typeof value,
+        defaultValue: value,
+        readOnly: read_only
+      });
+    }
+    return columns;
+  }
+  /**
+   * Persist the current dbMap to Kv   
+   * This is called for any mutation of the dbMap (set/delete)
+   */
+  persist(order = true) {
+    if (order) {
+      this.dbMap = new Map([...this.dbMap.entries()].sort());
+    }
+    const mapString = JSON.stringify(Array.from(this.dbMap.entries()));
+    const encrypted = this.encryptText(mapString);
+    this.kvClient.set(encrypted);
+  }
+  /** hydrate a dataset from a single raw record stored in kvDB */
+  hydrate() {
+    this.raw = [...this.dbMap.values()];
+    this.querySet = [...this.raw];
+    this.UiHost.buildDataTable(this);
+    return this.raw.length > 2 ? "ok" : "Not found";
+  }
+  /** resest the working querySet to original DB values */
+  resetData() {
+    this.querySet = [...this.raw];
+  }
+  clean(what = null) {
+    const cleanMap = /* @__PURE__ */ new Map();
+    const keys = [...this.dbMap.keys()];
+    keys.forEach((value) => {
+      if (value !== what) {
+        cleanMap.set(value, this.dbMap.get(value));
+      }
+    });
+    this.dbMap = cleanMap;
+    this.persist(true);
+  }
+  /** The `set` method mutates - will call the `persist` method. */
+  set(key, value) {
+    try {
+      this.dbMap.set(key, value);
+      this.persist(true);
+      this.hydrate();
+      return key;
+    } catch (e) {
+      console.error("error setting ");
+      return "Error " + e;
+    }
+  }
+  /** The `get` method will not mutate records */
+  get(key) {
+    try {
+      const result = this.dbMap.get(key);
+      return result;
+    } catch (e) {
+      return "Error " + e;
+    }
+  }
+  /** The `delete` method mutates - will call the `persist` method. */
+  delete(key) {
+    try {
+      const result = this.dbMap.delete(key);
+      if (result === true) this.persist(true);
+      this.hydrate();
+      return result;
+    } catch (e) {
+      return "Error " + e;
+    }
+  }
+};
 var focusedCell;
 var focusedRow;
 var kvCache;
 var TableComponent = class extends HTMLElement {
   static {
     __name(this, "TableComponent");
+  }
+  static {
+    __name3(this, "TableComponent");
   }
   static register() {
     customElements.define("table-component", this);
@@ -337,7 +655,7 @@ var TableComponent = class extends HTMLElement {
   }
   /** Initialize this component */
   init(schema, appContext) {
-    kvCache = new KvCache(schema, appContext, this);
+    kvCache = new KvCache2(schema, appContext, this);
     this.table = this.shadow.getElementById("table");
     this.tableBody = this.shadow.getElementById("table-body");
     this.tableBody.addEventListener("click", this);
@@ -484,11 +802,12 @@ var TableComponent = class extends HTMLElement {
   }
 };
 TableComponent.register();
-
-// ../../Components/FootComponent.ts
 var FooterComponent = class extends HTMLElement {
   static {
     __name(this, "FooterComponent");
+  }
+  static {
+    __name3(this, "FooterComponent");
   }
   static register() {
     customElements.define("footer-component", this);
@@ -569,14 +888,15 @@ var FooterComponent = class extends HTMLElement {
   }
 };
 FooterComponent.register();
-
-// ../../Components/PinComponent.ts
-var on = /* @__PURE__ */ __name((elem, event, listener) => {
+var on = /* @__PURE__ */ __name3((elem, event, listener) => {
   return elem.addEventListener(event, listener);
 }, "on");
 var PinComponent = class extends HTMLElement {
   static {
     __name(this, "PinComponent");
+  }
+  static {
+    __name3(this, "PinComponent");
   }
   static register() {
     customElements.define("pin-component", this);
