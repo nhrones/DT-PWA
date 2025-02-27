@@ -4,7 +4,7 @@
       "Entry": [
          "./main.ts"
       ],
-      "Minify": false,
+      "Minify": true,
       "OutPath": "./"
    },
    "RUN": {
