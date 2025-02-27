@@ -5,13 +5,14 @@
    <title>DT</title>
    <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;,">
    <script type="module" src="./bundle.js"></script>
-   <script type="module" src="./main.js"></script>
+   <!-- <script type="module" src="./main.js"></script> -->
 </head>
 
 <style>
-   pin-component:not(:defined) > * {
+   pin-component:not(:defined)>* {
       display: none;
    }
+
    body {
       color-scheme: dark;
       background-color: #222;
@@ -85,25 +86,30 @@
                inset-block-start: 0;
             }
 
-            #table {
-               margin-left: 50px;
+            table {
+               table-layout: fixed;
+               margin-left: 5%;
+               max-width: 100%;
+               /* margin-right: auto; */
             }
 
-            #table td,
-            #table th {
+            td,
+            th {
                border: 1px solid #554e4e;
                padding: 8px;
             }
 
             td {
-               white-space: pre
+               white-space: pre;
+               padding-left: 20px;
+               word-wrap: break-word;
             }
 
-            #table tr:nth-child(even) {
+            tr:nth-child(even) {
                background-color: #222;
             }
 
-            #table tr:hover {
+            tr:hover {
                background-color: #242;
             }
 
@@ -111,7 +117,7 @@
                background-color: #363;
             }
 
-            #table th {
+            th {
                padding-top: 5px;
                padding-bottom: 5px;
                text-align: left;

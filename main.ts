@@ -1,3 +1,11 @@
+/// <reference lib="dom" />
+
+import { PinComponent } from "../../Components/PinComponent.ts";
+import { FooterComponent } from "../../Components/FootComponent.ts";
+
+export * from "../../Components/PinComponent.ts"
+export * from "../../Components/FootComponent.ts"
+export * from "../../Components/TableComponent.ts"
 
 /** 
  * A unique schema object 
@@ -39,29 +47,23 @@ const appContext = {
 document.title = thisSchema.dbKey
 
 /**
- * Initialize our Custom DataTable UI
+ * Get a reference to our Custom Footer UI
  * We pass in a dbSchema and an appContext
  * @returns TableComponent.KvCache
  */
-// const table = document.getElementById("table-component").init(thisSchema, appContext)
+const footer = document.getElementById("footer-component") as FooterComponent
 
-// const REQUIRE_PIN = true
-
-// if (REQUIRE_PIN) {
-//    document.getElementById("pin-component").init(table.kvCache)
-// }
-
-const footer = document.getElementById("footer-component")
+/**
+ * Get a reference to our our Custom DataTable UI
+ * We pass in a dbSchema and an appContext
+ * @returns a reference to a TableComponent instance
+ */
 const table = footer.init(thisSchema, appContext)
 
 const REQUIRE_PIN = true
 
 if (REQUIRE_PIN) {
-   document.getElementById("pin-component").init(table.kvCache.CTX)
+   // if require PIN, initialize the component with the context
+   (document.getElementById("pin-component") as PinComponent).init(table.kvCache.CTX)
 }
-
-
-//TODO Do a clean separation of Data-Provider and Web-Components
-//TODO Separate PIN-UI from the Table-UI --> use PIN only for KV-RPC
-
-// PIN-UI --> Cache --> Table-UI
+//TODO replace above to enforce PIN for this app

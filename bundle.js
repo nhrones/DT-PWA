@@ -2,18 +2,13 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../../Components/PinComponent/PinComponent.js
-var __defProp2 = Object.defineProperty;
-var __name2 = /* @__PURE__ */ __name((target, value) => __defProp2(target, "name", { value, configurable: true }), "__name");
-var on = /* @__PURE__ */ __name2((elem, event, listener) => {
+// ../../Components/PinComponent.ts
+var on = /* @__PURE__ */ __name((elem, event, listener) => {
   return elem.addEventListener(event, listener);
 }, "on");
 var PinComponent = class extends HTMLElement {
   static {
     __name(this, "PinComponent");
-  }
-  static {
-    __name2(this, "PinComponent");
   }
   static register() {
     customElements.define("pin-component", this);
@@ -90,15 +85,10 @@ var PinComponent = class extends HTMLElement {
 };
 PinComponent.register();
 
-// ../../Components/FooterComponent/FootComponent.js
-var __defProp3 = Object.defineProperty;
-var __name3 = /* @__PURE__ */ __name((target, value) => __defProp3(target, "name", { value, configurable: true }), "__name");
+// ../../Components/FootComponent.ts
 var FooterComponent = class extends HTMLElement {
   static {
     __name(this, "FooterComponent");
-  }
-  static {
-    __name3(this, "FooterComponent");
   }
   static register() {
     customElements.define("footer-component", this);
@@ -118,31 +108,31 @@ var FooterComponent = class extends HTMLElement {
       this.shadow.append(FooterTemplate.content.cloneNode(true));
     }
   }
-  init(thisSchema, appContext) {
-    const table = document.getElementById("table-component").init(thisSchema, appContext);
+  init(thisSchema2, appContext2) {
+    const table2 = document.getElementById("table-component").init(thisSchema2, appContext2);
     this.addBtn = this.shadow.getElementById("addbtn");
     this.addBtn.onclick = (_e) => {
-      const newRow = Object.assign({}, thisSchema.sampleRecord);
+      const newRow = Object.assign({}, thisSchema2.sampleRecord);
       for (const property in newRow) {
         if (typeof newRow[property] === "object") {
           newRow[property] = newRow[property][0];
         }
       }
-      const keyColName = thisSchema.keyColumnName;
-      table.kvCache.set(newRow[keyColName], newRow);
-      table.buildDataTable();
-      table.scrollToBottom();
+      const keyColName = thisSchema2.keyColumnName;
+      table2.kvCache.set(newRow[keyColName], newRow);
+      table2.buildDataTable();
+      table2.scrollToBottom();
     };
     this.deleteBtn = this.shadow.getElementById("deletebtn");
     this.deleteBtn.onclick = (_e) => {
-      table.kvCache.delete(table.kvCache.CTX.FocusedKey);
-      table.buildDataTable();
+      table2.kvCache.delete(table2.kvCache.CTX.FocusedKey);
+      table2.buildDataTable();
     };
     let fileLoad = this.shadow.getElementById("fileload");
     document.addEventListener("keydown", function(event) {
       if (event.ctrlKey && event.key === "b") {
         event.preventDefault();
-        const jsonData = JSON.stringify(Array.from(table.kvCache.dbMap.entries()));
+        const jsonData = JSON.stringify(Array.from(table2.kvCache.dbMap.entries()));
         const link = document.createElement("a");
         const file = new Blob([jsonData], { type: "application/json" });
         link.href = URL.createObjectURL(file);
@@ -156,13 +146,13 @@ var FooterComponent = class extends HTMLElement {
         fileLoad.addEventListener("change", function() {
           const reader = new FileReader();
           reader.onload = function() {
-            table.kvCache.restoreCache(reader.result);
+            table2.kvCache.restoreCache(reader.result);
           };
           reader.readAsText(fileLoad.files[0]);
         });
       }
     });
-    return table;
+    return table2;
   }
   /** reset footer buttons */
   resetButtons(reset) {
@@ -177,15 +167,10 @@ var FooterComponent = class extends HTMLElement {
 };
 FooterComponent.register();
 
-// ../../Components/TableComponent/TableComponent.js
-var __defProp4 = Object.defineProperty;
-var __name4 = /* @__PURE__ */ __name((target, value) => __defProp4(target, "name", { value, configurable: true }), "__name");
+// ../../Data/DataProvider/src/kvClient.ts
 var KvClient = class {
   static {
     __name(this, "KvClient");
-  }
-  static {
-    __name4(this, "KvClient");
   }
   DEV = false;
   nextMsgID = 0;
@@ -350,12 +335,11 @@ var KvClient = class {
     });
   }
 };
+
+// ../../Data/DataProvider/src/kvCache.ts
 var KvCache = class {
   static {
     __name(this, "KvCache");
-  }
-  static {
-    __name4(this, "KvCache");
   }
   UiHost;
   dbKey = "";
@@ -487,14 +471,13 @@ var KvCache = class {
     }
   }
 };
+
+// ../../Components/TableComponent.ts
 var focusedCell;
 var focusedRow;
 var TableComponent = class extends HTMLElement {
   static {
     __name(this, "TableComponent");
-  }
-  static {
-    __name4(this, "TableComponent");
   }
   static register() {
     customElements.define("table-component", this);
@@ -517,8 +500,8 @@ var TableComponent = class extends HTMLElement {
     }
   }
   /** Initialize this component */
-  init(schema, appContext) {
-    this.kvCache = new KvCache(schema, appContext, this);
+  init(schema, appContext2) {
+    this.kvCache = new KvCache(schema, appContext2, this);
     this.table = this.shadow.getElementById("table");
     this.tableBody = this.shadow.getElementById("table-body");
     this.tableBody.addEventListener("click", this);
@@ -664,6 +647,36 @@ var TableComponent = class extends HTMLElement {
   }
 };
 TableComponent.register();
+
+// main.ts
+var thisSchema = {
+  dbKey: "PWA",
+  keyColumnName: "host",
+  sampleRecord: {
+    host: "Z",
+    login: "",
+    pw: "",
+    remarks: ""
+  }
+};
+document.title = thisSchema.dbKey;
+var appContext = {
+  DEV: false,
+  LOCAL_DB: false,
+  LocalDbURL: "http://localhost:9099/",
+  RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
+  RpcURL: "SSERPC/kvRegistration",
+  PIN: "",
+  FocusedKey: "",
+  dbOptions: { schema: thisSchema }
+};
+document.title = thisSchema.dbKey;
+var footer = document.getElementById("footer-component");
+var table = footer.init(thisSchema, appContext);
+var REQUIRE_PIN = true;
+if (REQUIRE_PIN) {
+  document.getElementById("pin-component").init(table.kvCache.CTX);
+}
 export {
   FooterComponent,
   PinComponent,
