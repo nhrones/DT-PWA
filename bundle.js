@@ -673,10 +673,7 @@ var appContext = {
 document.title = thisSchema.dbKey;
 var footer = document.getElementById("footer-component");
 var table = footer.init(thisSchema, appContext);
-var REQUIRE_PIN = true;
-if (REQUIRE_PIN) {
-  document.getElementById("pin-component").init(table.kvCache.CTX);
-}
+document.getElementById("pin-component").init(table.kvCache.CTX);
 export {
   FooterComponent,
   PinComponent,

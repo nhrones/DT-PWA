@@ -2,6 +2,7 @@
 
 import { PinComponent } from "../../Components/PinComponent.ts";
 import { FooterComponent } from "../../Components/FootComponent.ts";
+import { TableComponent } from "../../Components/TableComponent.ts";
 
 export * from "../../Components/PinComponent.ts"
 export * from "../../Components/FootComponent.ts"
@@ -58,12 +59,6 @@ const footer = document.getElementById("footer-component") as FooterComponent
  * We pass in a dbSchema and an appContext
  * @returns a reference to a TableComponent instance
  */
-const table = footer.init(thisSchema, appContext)
+const table = footer.init(thisSchema, appContext) as TableComponent
 
-const REQUIRE_PIN = true
-
-if (REQUIRE_PIN) {
-   // if require PIN, initialize the component with the context
-   (document.getElementById("pin-component") as PinComponent).init(table.kvCache.CTX)
-}
-//TODO replace above to enforce PIN for this app
+(document.getElementById("pin-component") as PinComponent).init(table.kvCache.CTX)
