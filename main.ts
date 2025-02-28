@@ -18,7 +18,7 @@ export * from "../../Components/TableComponent.ts"
  */
 const thisSchema = {
    dbKey: "PWA",
-   keyColumnName:"host",
+   keyColumnName: "host",
    sampleRecord: {
       host: "Z",
       login: "",
@@ -44,6 +44,31 @@ const appContext = {
    dbOptions: { schema: thisSchema }
 }
 
+const pinComponent = document.getElementById("pin-component") as PinComponent
+pinComponent.init()
+   .then((result) => {
+      console.log(result)
+      if (result === "ok") {
+         /**
+          * Get a reference to our Custom Footer UI
+          * We pass in a dbSchema and an appContext
+          * @returns TableComponent.KvCache
+          */
+         const footer = document.getElementById("footer-component") as FooterComponent
+
+         /**
+          * Get a reference to our our Custom DataTable UI
+          * We pass in a dbSchema and an appContext
+          * @returns a reference to a TableComponent instance
+          */
+         footer.init(thisSchema, appContext) as TableComponent
+
+      }
+   })
+   .catch((er)=>{
+      alert(er)
+   })
+
 /**
  * Get a reference to our Custom Footer UI
  * We pass in a dbSchema and an appContext
@@ -56,6 +81,4 @@ const footer = document.getElementById("footer-component") as FooterComponent
  * We pass in a dbSchema and an appContext
  * @returns a reference to a TableComponent instance
  */
-const table = footer.init(thisSchema, appContext) as TableComponent
-
-(document.getElementById("pin-component") as PinComponent).init(table.kvCache.CTX)
+footer.init(thisSchema, appContext) as TableComponent
