@@ -2,7 +2,6 @@
 
 import { PinComponent } from "../../Components/PinComponent.ts";
 import { FooterComponent } from "../../Components/FootComponent.ts";
-import { TableComponent } from "../../Components/TableComponent.ts";
 
 export * from "../../Components/PinComponent.ts"
 export * from "../../Components/FootComponent.ts"
@@ -44,6 +43,13 @@ const appContext = {
    dbOptions: { schema: thisSchema }
 }
 
+/** 
+ * PIN Component 
+ * This component secures a data app by requiring a PIN
+ * A sucessfull PIN will result in instantiation of 
+ * a footer component that will in turn instantiate
+ * a data table component
+ */ 
 const pinComponent = document.getElementById("pin-component") as PinComponent
 pinComponent.init()
    .then((result) => {
