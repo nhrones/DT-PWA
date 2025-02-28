@@ -44,9 +44,6 @@ const appContext = {
    dbOptions: { schema: thisSchema }
 }
 
-// set the title to the dbKey value
-document.title = "DT-PWA"
-
 /**
  * Get a reference to our Custom Footer UI
  * We pass in a dbSchema and an appContext
