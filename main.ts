@@ -2,7 +2,7 @@
 
 import { PinComponent } from "../../Components/PinComponent.ts";
 import { TableComponent } from "../../Components/TableComponent.ts";
-
+import { AppContext, DataContext } from "../../Shared/types.ts"
 export * from "../../Components/PinComponent.ts"
 export * from "../../Components/FootComponent.ts"
 export * from "../../Components/TableComponent.ts"
@@ -31,15 +31,21 @@ const thisSchema = {
 /** 
  *  Our shared app context -> dependency injected below
  */
-const appContext = {
+const appContext: AppContext = {
    DEV: false,
-   LOCAL_DB: false,
+   PIN: '',
+   FocusedKey: ""
+}
+
+/** 
+ * Our shared data context -> dependency injected below
+ */
+const dataContext: DataContext = {
+   DEV: false,
+   LOCAL_DB: true,
    LocalDbURL: "http://localhost:9099/",
    RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
-   PIN: '',
-   FocusedKey: "",
-   dbOptions: { schema: thisSchema }
 }
 
 /** 
@@ -56,7 +62,7 @@ pinComponent.init()
       if (result === "ok") {
          // /** get a reference to our Custom Table UI */
          const table = document.getElementById("table-component") as TableComponent
-         table!.init(thisSchema, appContext)
+         table!.init(thisSchema, appContext, dataContext)
       }
    })
    .catch((er) => {
