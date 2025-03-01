@@ -26,9 +26,6 @@ const thisSchema = {
    }
 }
 
-// set the title to the dbKey value
-document.title = thisSchema.dbKey
-
 /** 
  *  Our shared app context -> dependency injected below
  */
@@ -44,9 +41,9 @@ const appContext = {
 }
 
 /** 
- * PIN Component 
+ * A initialize our reference to the PIN Component 
  * This component secures a data app by requiring a PIN
- * A sucessfull PIN will result in instantiation of 
+ * A sucessfull PIN will result in an instantiation of 
  * a footer component that will in turn instantiate
  * a data table component
  */ 
@@ -55,20 +52,10 @@ pinComponent.init()
    .then((result) => {
       console.log(result)
       if (result === "ok") {
-         /**
-          * Get a reference to our Custom Footer UI
-          * We pass in a dbSchema and an appContext
-          * @returns TableComponent.KvCache
-          */
+         /** get a reference to our Custom Footer UI */
          const footer = document.getElementById("footer-component") as FooterComponent
-
-         /**
-          * Get a reference to our our Custom DataTable UI
-          * We pass in a dbSchema and an appContext
-          * @returns a reference to a TableComponent instance
-          */
+         // initialize our footer component with dbSchema and appContext
          footer.init(thisSchema, appContext)
-
       }
    })
    .catch((er) => {

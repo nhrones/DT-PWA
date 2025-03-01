@@ -2,37 +2,37 @@
    // See https://go.microsoft.com/fwlink/?LinkId=733558
    // for the documentation about the tasks.json format
    "version": "2.0.0",
-   "tasks": [      
+   "tasks": [
       {
-      "type": "deno",
-      "command": "run",
-      "args": [
-         "-A",
-         "--unstable-broadcast-channel",
-         "--unstable-kv",
-         "server.ts"
-      ],
-      "options": {
-         "cwd": "../../Data/DT-KV-RPC/"
+         "label": "RPC-SERVICE ",
+         "type": "deno",
+         "command": "run",
+         "args": [
+            "-A",
+            "--unstable-broadcast-channel",
+            "--unstable-kv",
+            "server.ts"
+         ],
+         "options": {
+            "cwd": "../../Data/DT-KV-RPC/"
+         },
+         "problemMatcher": [
+            "$deno"
+         ]
       },
-      "problemMatcher": [
-         "$deno"
-      ],
-      "label": "RPC-SERVICE "
-   },
       {
+         "label": "BUILD",
          "type": "shell",
          "command": "build",
          "problemMatcher": [
             "$deno"
-         ],
-         "label": "BUILD"
+         ]
       },
       {
+         "label": "RUN",
          "type": "shell",
          "command": "serve",
-         "problemMatcher": [],
-         "label": "RUN"
+         "problemMatcher": []
       }
    ]
 }
