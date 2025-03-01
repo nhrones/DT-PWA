@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
 import { PinComponent } from "../../Components/PinComponent.ts";
-import { FooterComponent } from "../../Components/FootComponent.ts";
+import { TableComponent } from "../../Components/TableComponent.ts";
 
 export * from "../../Components/PinComponent.ts"
 export * from "../../Components/FootComponent.ts"
@@ -54,10 +54,9 @@ pinComponent.init()
    .then((result) => {
       console.log(result)
       if (result === "ok") {
-         /** get a reference to our Custom Footer UI */
-         const footer = document.getElementById("footer-component") as FooterComponent
-         // initialize our footer component with dbSchema and appContext
-         footer.init(thisSchema, appContext)
+         // /** get a reference to our Custom Table UI */
+         const table = document.getElementById("table-component") as TableComponent
+         table!.init(thisSchema, appContext)
       }
    })
    .catch((er) => {
