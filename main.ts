@@ -41,7 +41,7 @@ const appContext: AppContext = {
  * Our shared data context -> dependency injected below
  */
 const dataContext: DataContext = {
-   LOCAL_DB: true,
+   LOCAL_DB: false,
    LocalDbURL: "http://localhost:9099/",
    RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
    RpcURL: "SSERPC/kvRegistration",
