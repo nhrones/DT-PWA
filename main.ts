@@ -14,6 +14,8 @@ export * from "../../Components/TableComponent.ts"
  * 
  * In the schema-sample, a boolean value will produce a checkbox,
  * and a string array will be auto-configured as a select element.
+ * A number set to -1 will create an uneditable cell
+ * A string set to "readonly" will also create an uneditable cell
  */
 const thisSchema = {
    dbKey: "PWA",
