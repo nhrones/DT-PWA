@@ -41,7 +41,6 @@ const appContext: AppContext = {
  * Our shared data context -> dependency injected below
  */
 const dataContext: DataContext = {
-   DEV: false,
    LOCAL_DB: true,
    LocalDbURL: "http://localhost:9099/",
    RemoteDbURL: "https://dt-kv-rpc.deno.dev/",
