@@ -3,6 +3,7 @@
 import { PinComponent } from "../../Components/PinComponent.ts";
 import { TableComponent } from "../../Components/TableComponent.ts";
 import { AppContext, DataContext } from "../../Shared/types.ts"
+import { KvCache } from "../../Components/deps.ts";
 export * from "../../Components/PinComponent.ts"
 export * from "../../Components/FootComponent.ts"
 export * from "../../Components/TableComponent.ts"
@@ -57,11 +58,14 @@ const dataContext: DataContext = {
 const pinComponent = document.getElementById("pin-component") as PinComponent
 pinComponent.init()
    .then((result) => {
-      console.log(result)
       if (result === "ok") {
+         
+         // We build cache first 
+         const cache = new KvCache(thisSchema, dataContext, appContext.PIN)
+         
          // /** get a reference to our Custom Table UI */
          const table = document.getElementById("table-component") as TableComponent
-         table!.init(thisSchema, appContext, dataContext)
+         table!.init(thisSchema, appContext, cache)
       }
    })
    .catch((er) => {
