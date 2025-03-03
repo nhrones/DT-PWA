@@ -1,8 +1,7 @@
 /// <reference lib="dom" />
-
+import type { AppContext, DataContext, CacheType, Schema } from "../../Shared/types.ts";
 import { PinComponent } from "../../Components/PinComponent.ts";
 import { TableComponent } from "../../Components/TableComponent.ts";
-import { AppContext, DataContext } from "../../Shared/types.ts"
 import { KvCache } from "../../Components/deps.ts";
 export * from "../../Components/PinComponent.ts"
 export * from "../../Components/FootComponent.ts"
@@ -18,7 +17,7 @@ export * from "../../Components/TableComponent.ts"
  * A number set to -1 will create an uneditable cell
  * A string set to "readonly" will also create an uneditable cell
  */
-const thisSchema = {
+const thisSchema: Schema = {
    dbKey: "PWA",
    keyColumnName: "host",
    sampleRecord: {
@@ -61,7 +60,7 @@ pinComponent.init()
       if (result === "ok") {
          
          // We build cache first 
-         const cache = new KvCache(thisSchema, dataContext, appContext.PIN)
+         const cache: CacheType = new KvCache(thisSchema, dataContext, appContext)
          
          // /** get a reference to our Custom Table UI */
          const table = document.getElementById("table-component") as TableComponent
